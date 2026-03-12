@@ -2,8 +2,7 @@
 export interface WorkOrder {
 	id: string;
 	name: string;
-	description: string;
-	database_path: string;
+	// path: string;
 	// status: "open" | "in_progress" | "completed" | "cancelled";
 	// priority: "low" | "medium" | "high" | "critical";
 	// assignedTo?: string;
