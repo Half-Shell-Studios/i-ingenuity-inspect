@@ -1,5 +1,6 @@
 import type { UpdateWorkOrderPayload, WorkOrder } from "@/src/types/WorkOrder";
 import { Directory, File, Paths } from "expo-file-system/next";
+import { router } from "expo-router";
 import client from "./client";
 
 const DB_NAME = "work_orders.db";
@@ -35,6 +36,8 @@ export async function downloadWorkOrdersDb( itemId: string ): Promise<void> {
 	}
 
 	localDbFile.write( new Uint8Array( dbFile ) );
+
+	router.replace( '/(app)/work-orders/WorkOrders' );
 }
 
 export function dbExists(): boolean {
