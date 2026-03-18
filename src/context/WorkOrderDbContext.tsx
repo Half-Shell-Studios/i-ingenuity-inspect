@@ -32,7 +32,6 @@ export function WorkOrderDbProvider({ itemId, children }: { itemId: string; chil
 				setIsReady( true );
 			} else {
 				setError( err instanceof Error ? err.message : "Failed to load database" );
-
 			}
 		}
 	}
