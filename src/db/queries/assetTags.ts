@@ -1,16 +1,25 @@
-// src/db/queries/assetTags.ts
+import { assetTagsTable } from "@/src/db/schema";
 import { eq } from "drizzle-orm";
 import { getDb } from "../index";
-import { assetTags } from "../schemas/workOrder";
 
-const db = getDb("work_orders.db");
+const db = getDb( 'work_orders.db' );
 
 export function getAllAssetTags() {
-	return db.select().from( assetTags ).all();
+	return db.query.assetTagsTable.findMany({
+		with: {
+			assetTemplate: {
+				with: {
+					revisionActive: true,
+				}
+			},
+			location: true,
+			faults: true,
+		},
+	});
 }
 
 export function getAssetTagById( id: string ) {
-	return db.select().from( assetTags ).where(
-		eq( assetTags.id, id )
+	return db.select().from( assetTagsTable ).where(
+		eq( assetTagsTable.id, id )
 	).get();
 }
