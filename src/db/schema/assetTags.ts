@@ -30,5 +30,7 @@ export const assetTagsRelations = defineRelations(
 			}
 		),
 		faults: many(faultsTable),
+		faultsOpen: many(faultsTable),
+		faultsClosed: many(faultsTable),
 	})
 );
