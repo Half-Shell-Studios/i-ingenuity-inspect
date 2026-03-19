@@ -1,5 +1,5 @@
-import { assetTagsTable } from "@/src/db/schema";
-import { eq } from "drizzle-orm";
+import { assetTagsTable, faultsTable } from "@/src/db/schema";
+import { eq, isNotNull, isNull } from "drizzle-orm";
 import { getDb } from "../index";
 
 const db = getDb( 'work_orders.db' );
@@ -12,8 +12,17 @@ export function getAllAssetTags() {
 					revisionActive: true,
 				}
 			},
+			faultsOpen: {
+				where: isNull(
+					faultsTable.closedAt
+				),
+			},
+			faultsClosed: {
+				where: isNotNull(
+					faultsTable.closedAt
+				),
+			},
 			location: true,
-			faults: true,
 		},
 	});
 }
