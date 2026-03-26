@@ -4,7 +4,7 @@ import { ActivityIndicator, View } from "react-native";
 import { AuthProvider, useAuth } from "../src/context/AuthContext";
 import { getLastRoute } from "../src/utils/storage";
 
-const VALID_APP_ROUTES = [ "dashboard", "profile", "settings" ] as const;
+const VALID_APP_ROUTES = [ "dashboard" ] as const;
 type AppRoute = (typeof VALID_APP_ROUTES)[number];
 
 function isValidAppRoute( route: string | null ): route is AppRoute {
