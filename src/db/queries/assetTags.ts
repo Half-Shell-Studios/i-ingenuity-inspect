@@ -28,7 +28,25 @@ export function getAllAssetTags() {
 }
 
 export function getAssetTagById( id: string ) {
-	return db.select().from( assetTagsTable ).where(
-		eq( assetTagsTable.id, id )
-	).get();
+	return db.query.assetTagsTable.findFirst({
+		where: eq( assetTagsTable.id, id ),
+		with: {
+			assetTemplate: {
+				with: {
+					revisionActive: true,
+				}
+			},
+			faultsOpen: {
+				where: isNull(
+					faultsTable.closedAt
+				),
+			},
+			faultsClosed: {
+				where: isNotNull(
+					faultsTable.closedAt
+				),
+			},
+			location: true,
+		},
+	});
 }
