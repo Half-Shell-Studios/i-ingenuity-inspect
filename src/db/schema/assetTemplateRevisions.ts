@@ -1,7 +1,7 @@
 import { assetTagsTable } from "@/src/db/schema/assetTags";
+import { assetTemplatesTable } from "@/src/db/schema/assetTemplates";
 import { relations } from 'drizzle-orm';
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { assetTemplatesTable } from "./assetTemplates";
 
 export const assetTemplateRevisionsTable = sqliteTable( 'asset_template_revisions', {
 	id: text("id").primaryKey(),
