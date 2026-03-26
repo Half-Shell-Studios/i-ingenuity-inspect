@@ -1,11 +1,10 @@
 import type { UpdateWorkOrderPayload, WorkOrder } from "@/src/types/WorkOrder";
+import { getActiveWorkOrderUuid, setActiveWorkOrderUuid } from "@/src/utils/storage";
 import { Directory, File, Paths } from "expo-file-system/next";
 import { router } from "expo-router";
 import client from "./client";
 
-const DB_NAME = "work_orders.db";
-const sqliteDir = new Directory(Paths.document, "SQLite");
-const localDbFile = new File(sqliteDir, DB_NAME);
+const sqliteDir = new Directory( Paths.document, "SQLite" );
 
 export const workOrdersApi = {
 	getAll: () => client.get<WorkOrder[]>( '/work-orders' ),
@@ -19,33 +18,51 @@ export const workOrdersApi = {
 	// delete: ( id: string ) => client.delete( `/work-orders/${ id }` ),
 };
 
-export async function downloadWorkOrdersDb( itemId: string ): Promise<void> {
-	// Ensure SQLite directory exists
+export async function downloadWorkOrdersDb( uuid: string ): Promise<void> {
+	if( uuid === '' ) return;
+
+	// 1. Ensure the SQLite directory exists
 	if( !sqliteDir.exists ) {
 		sqliteDir.create();
 	}
 
-	// Download the file
-	const { data: dbFile } = await client.get(`/work-orders/${ itemId }`, {
+	// 2. Check if file already exists locally
+	const localDbFile = new File( sqliteDir, `${ uuid }.db` );
+	if( localDbFile.exists ) {
+		// Still save as active
+		await setActiveWorkOrderUuid( uuid );
+
+		return;
+	}
+
+	// 3. Download from backend
+	const { data: dbFile } = await client.get( `/work-orders/${ uuid }/db`, {
 		responseType: "arraybuffer",
 	});
 
-	// Remove old file if it exists
-	if( localDbFile.exists ) {
-		localDbFile.delete();
-	}
-
+	// 4. Save to device with UUID as filename
 	localDbFile.write( new Uint8Array( dbFile ) );
 
-	router.replace( '/(app)/work-orders/WorkOrders' );
+	await setActiveWorkOrderUuid( uuid );
+
+	router.replace( `/(app)/work-orders/${ uuid }` );
 }
 
-export function dbExists(): boolean {
-	return localDbFile.exists;
+export async function getActiveWorkOrderDbName(): Promise<string | null> {
+	return getActiveWorkOrderUuid();
 }
 
-export function deleteLocalDb(): void {
-	if( localDbFile.exists ) {
-		localDbFile.delete();
+export function dbExists( uuid: string ): boolean {
+	if( uuid === '' ) return false;
+
+	const dbFile = new File( sqliteDir, `${ uuid }.db` );
+	
+	return dbFile.exists;
+}
+
+export function deleteLocalDb( uuid: string ): void {
+	if( dbExists( uuid ) ) {
+		const dbFile = new File( sqliteDir, `${ uuid }.db` );
+		dbFile.delete();
 	}
 }
