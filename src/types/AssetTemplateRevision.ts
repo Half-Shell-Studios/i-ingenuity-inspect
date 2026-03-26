@@ -1,4 +1,4 @@
-type AssetTemplateRevision = {
+export interface AssetTemplateRevision {
 	id: string,
 	assetTemplateId: string,
 	classification: string,

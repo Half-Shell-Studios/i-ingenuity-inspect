@@ -8,6 +8,7 @@ export * from "./Fault";
 // export * from "./inspectionTemplates";
 // export * from "./inspectionTemplateRevisions";
 // export * from "./inspectionTypes";
-// export * from "./locations";
+export * from "./Location";
 // export * from "./team";
 export * from "./User";
+export * from "./WorkOrder";

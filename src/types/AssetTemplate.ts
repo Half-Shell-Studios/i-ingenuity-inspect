@@ -1,6 +1,6 @@
 import type AssetTemplateRevision from "./AssetTemplateRevision"
 
-type AssetTemplate = {
+export interface AssetTemplate {
 	id: string,
 	revisionActiveId?: string,
 	revisionActive?: AssetTemplateRevision,

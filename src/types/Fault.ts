@@ -1,4 +1,4 @@
-type Fault = {
+export interface Fault {
 	id: string,
 	locationId: string,
 	assetTagId: string,
