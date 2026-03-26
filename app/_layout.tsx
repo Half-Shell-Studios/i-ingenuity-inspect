@@ -1,3 +1,4 @@
+import { WorkOrderDbProvider } from "@/src/context/WorkOrderDbContext";
 import { Slot, useRouter, useSegments } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
@@ -65,7 +66,9 @@ function AuthGate() {
 export default function RootLayout() {
 	return (
 		<AuthProvider>
-			<AuthGate />
+			<WorkOrderDbProvider>
+				<AuthGate />
+			</WorkOrderDbProvider>
 		</AuthProvider>
 	);
 }
