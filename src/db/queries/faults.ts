@@ -1,16 +1,19 @@
-import { eq, isNull } from "drizzle-orm";
-import { getDb } from "../index";
 import { faultsTable } from "@/src/db/schema";
+import { eq, isNull } from "drizzle-orm";
+import { AppDatabase } from "..";
+// import { getActiveDb } from "../index";
 
-const db = getDb( 'work_orders.db' );
+export async function getOpenFaults( db: AppDatabase | null ) {
+	if( !db ) return;
 
-export function getOpenFaults() {
 	return db.select().from( faultsTable ).where(
 		isNull( faultsTable.closedAt )
 	).all();
 }
 
-export function closeFault( id: string, userId: string, comment: string ) {
+export async function closeFault( db: AppDatabase | null, id: string, userId: string, comment: string ) {
+	if( !db ) return;
+
 	return db.update( faultsTable ).set({
 		closedAt: new Date().toISOString(),
 		closedBy: userId,

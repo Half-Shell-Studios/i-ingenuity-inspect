@@ -1,10 +1,10 @@
 import { assetTagsTable, faultsTable } from "@/src/db/schema";
 import { eq, isNotNull, isNull } from "drizzle-orm";
-import { getDb } from "../index";
+import { AppDatabase } from "..";
 
-const db = getDb( 'work_orders.db' );
+export async function getAllAssetTags( db: AppDatabase | null ) {
+	if( !db ) return [];
 
-export function getAllAssetTags() {
 	return db.query.assetTagsTable.findMany({
 		with: {
 			assetTemplate: {
@@ -27,7 +27,9 @@ export function getAllAssetTags() {
 	});
 }
 
-export function getAssetTagById( id: string ) {
+export async function getAssetTagById( db: AppDatabase | null, id: string ) {
+	if( !db ) return;
+
 	return db.query.assetTagsTable.findFirst({
 		where: eq( assetTagsTable.id, id ),
 		with: {
