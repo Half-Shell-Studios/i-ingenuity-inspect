@@ -1,7 +1,6 @@
 import type { UpdateWorkOrderPayload, WorkOrder } from "@/src/types/WorkOrder";
 import { getActiveWorkOrderUuid, setActiveWorkOrderUuid } from "@/src/utils/storage";
 import { Directory, File, Paths } from "expo-file-system/next";
-import { router } from "expo-router";
 import client from "./client";
 
 const sqliteDir = new Directory( Paths.document, "SQLite" );
@@ -19,33 +18,25 @@ export const workOrdersApi = {
 };
 
 export async function downloadWorkOrdersDb( uuid: string ): Promise<void> {
-	if( uuid === '' ) return;
+	if( uuid === "" ) return;
 
-	// 1. Ensure the SQLite directory exists
 	if( !sqliteDir.exists ) {
 		sqliteDir.create();
 	}
 
-	// 2. Check if file already exists locally
-	const localDbFile = new File( sqliteDir, `${ uuid }.db` );
+	const localDbFile = new File(sqliteDir, `${ uuid }.db`);
 	if( localDbFile.exists ) {
-		// Still save as active
 		await setActiveWorkOrderUuid( uuid );
-
 		return;
 	}
 
-	// 3. Download from backend
-	const { data: dbFile } = await client.get( `/work-orders/${ uuid }/db`, {
-		responseType: "arraybuffer",
+	const { data: dbFile } = await client.get( `/work-orders/${ uuid }`, {
+		responseType: "arraybuffer"
 	});
 
-	// 4. Save to device with UUID as filename
 	localDbFile.write( new Uint8Array( dbFile ) );
-
+	
 	await setActiveWorkOrderUuid( uuid );
-
-	router.replace( `/(app)/work-orders/${ uuid }` );
 }
 
 export async function getActiveWorkOrderDbName(): Promise<string | null> {
