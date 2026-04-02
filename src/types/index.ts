@@ -7,7 +7,7 @@ export * from "./Fault";
 // export * from "./inspections";
 // export * from "./inspectionTemplates";
 // export * from "./inspectionTemplateRevisions";
-// export * from "./inspectionTypes";
+export * from "./InspectionType";
 export * from "./Location";
 // export * from "./team";
 export * from "./User";
