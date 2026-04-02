@@ -1,24 +1,29 @@
 import { inspectionsTable, inspectionTypesTable } from "@/src/db/schema";
 import { eq } from "drizzle-orm";
-import { getDb } from "../index";
+import { getActiveDb } from "../index";
 
-const db = getDb( 'work_orders.db' );
-
-export function getAllInspections() {
+export async function getAllInspections() {
+	const db = await getActiveDb();
+	
 	return db.select().from( inspectionsTable ).all();
 }
 
-export function getAllInspectionTypes() {
+export async function getAllInspectionTypes() {
+	const db = await getActiveDb();
 	return db.select().from( inspectionTypesTable ).all();
 }
 
-export function getInspectionById(id: string) {
+export async function getInspectionById(id: string) {
+	const db = await getActiveDb();
+	
 	return db.select().from( inspectionsTable ).where(
 		eq( inspectionsTable.id, id )
 	).get();
 }
 
-export function getInspectionsByAssetTag(assetTagId: string) {
+export async function getInspectionsByAssetTag(assetTagId: string) {
+	const db = await getActiveDb();
+	
 	return db.select().from( inspectionsTable ).where(
 		eq( inspectionsTable.assetTagId, assetTagId )
 	).all();
