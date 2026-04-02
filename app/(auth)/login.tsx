@@ -34,10 +34,9 @@ export default function LoginScreen() {
 
 	return (	
 		<KeyboardAvoidingView style={ styles.container } behavior={ Platform.OS === "ios" ? "padding" : "height" }>
-			<View style={ styles.box }>
-				<Text style={{ textAlign: "center", fontSize: 36, fontWeight: 800, color: "#8e51ff" }}>I-Ingenuity</Text>
-				<View style={ styles.innerBox }>
-					<Text style={ styles.title }>Login</Text>
+			<View style={ styles.formWrapper }>
+				<Text style={{ textAlign: "center", fontSize: 36, fontWeight: 800, color: "#8e51ff", marginBottom: 20 }}>I-Ingenuity</Text>
+				<View style={ styles.form }>
 					<TextInput style={ styles.input } placeholder="Email" placeholderTextColor="#9ca3af" value={ email } onChangeText={ setEmail } autoCapitalize="none" keyboardType="email-address" returnKeyType="next" />
 					<TextInput style={ styles.input } placeholder="Password" placeholderTextColor="#9ca3af" value={ password } onChangeText={ setPassword } secureTextEntry returnKeyType="go" onSubmitEditing={ handleLogin } />
 					<Link href="/(auth)/forgot-password" style={{ ...styles.link, textAlign: "right", marginBottom: 10 }}>Forgot your password?</Link>
@@ -61,34 +60,20 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		justifyContent: "center",
+		alignItems: 'center',
+		justifyContent: 'center',
 		padding: 16,
 		backgroundColor: "#0f172b"
 	},
-	box: {
-		// paddingTop: 20,
-		// borderWidth: 2,
-		// borderColor: "#0f172b",
-		// borderRadius: 10,
+	formWrapper: {
+		width: '100%',
+		maxWidth: 480,
 	},
-	innerBox: {
-		// padding: 16,
-		// backgroundColor: "#0f172b",
-		// borderRadius: 10,
-		// marginTop: 20,
-	},
-	title: {
-		// color: "#ffffff",
-		// fontSize: 28,
-		// fontWeight: "bold",
-		// marginBottom: 32,
-		// textAlign: "center",
-	},
+	form: {},
 	input: {
 		color: "#ffffff",
 		fontSize: 16,
 		padding: 14,
-		// backgroundColor: "#f9fafb",
 		borderWidth: 1,
 		borderColor: "#8e51ff",
 		borderRadius: 10,
