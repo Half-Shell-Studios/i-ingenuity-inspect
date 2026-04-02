@@ -1,15 +1,20 @@
 import { Link } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { getDeviceNameSync } from 'react-native-device-info';
 import { useAuth } from "../../src/context/AuthContext";
 
 export default function LoginScreen() {
 	const { login } = useAuth();
-	const [ email, setEmail ] = useState( '' );
-	const [ password, setPassword ] = useState( '' );
-	const [ loading, setLoading ] = useState( false );
+	const [ email, setEmail ] = useState<string>( '' );
+	const [ password, setPassword ] = useState<string>( '' );
+	const [ loading, setLoading ] = useState<boolean>( false );
 	const [ deviceName ] = useState( getDeviceNameSync() )
+
+	useEffect(() => {
+		setEmail( process?.env?.EXPO_PUBLIC_DEV_USER ?? '' );
+		setPassword( process?.env?.EXPO_PUBLIC_DEV_USER_PASS ?? '' );
+	}, [])
 
 	const handleLogin = async () => {
 		if( !email.trim() || !password ) {
