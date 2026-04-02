@@ -3,7 +3,7 @@ import CardsContainer from "@/src/components/CardsContainer";
 import { getAllAssetTags } from "@/src/db/queries/assetTags";
 import AssetTag from "@/src/types/AssetTag";
 import { Link, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, TouchableOpacity } from "react-native";
 
 export default function AssetTagsIndex() {
@@ -43,16 +43,16 @@ export default function AssetTagsIndex() {
 							)}
 							{( tag.faultsOpen?.length ?? 0 ) > 0 && (<>
 								<Text>Open Faults ({ tag.faultsOpen?.length })</Text>
-								{/* { tag.faultsOpen?.map((fault, index) => (
+								{ tag.faultsOpen?.map((fault, index) => (
 									<Fragment key={ fault.id }>
 										<Text style={ styles.cardTitle }>
 											{ ( index + 1 ) }. { fault.section } - { fault.question }
 										</Text>
 										<Text>{ fault.raisedComment }</Text>
 									</Fragment>
-								))} */}
+								))}
 							</>)}
-							<Link href="/inspect">
+							<Link href="/inspections">
 								Inspect { tag.name }
 							</Link>
 						</Card>
