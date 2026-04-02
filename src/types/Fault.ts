@@ -8,9 +8,9 @@ export interface Fault {
 	question: string,
 	raisedAt: string,
 	raisedComment: string,
-	closedAt: string,
-	closedBy: string,
-	closedComment: string,
+	closedAt: string | null,
+	closedBy: string | null,
+	closedComment: string | null,
 }
 
 export default Fault;
