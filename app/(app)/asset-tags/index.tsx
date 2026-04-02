@@ -1,20 +1,28 @@
 import Card from "@/src/components/Card";
 import CardsContainer from "@/src/components/CardsContainer";
+import { useWorkOrderDb } from "@/src/context/WorkOrderDbContext";
 import { getAllAssetTags } from "@/src/db/queries/assetTags";
 import AssetTag from "@/src/types/AssetTag";
 import { Link, useRouter } from "expo-router";
 import { Fragment, useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity } from "react-native";
 
 export default function AssetTagsIndex() {
 	const router = useRouter();
 	const [ tags, setTags ] = useState<AssetTag[]>([]);
+	const { isReady: dbIsReady, error: dbError, db } = useWorkOrderDb();
 
 	useEffect(() => {
-		(async() => {
-			setTags( await getAllAssetTags() );
-		})();
-	}, []);
+		if( dbIsReady ) {	
+			(async() => {
+				setTags( await getAllAssetTags( db ) );
+			})();
+		}
+	}, [ db, dbIsReady ]);
+
+	
+	if( dbError ) return <Text>Error: { dbError }</Text>;
+	if( !dbIsReady || !db ) return <ActivityIndicator />;
 
 	return (
 		<ScrollView style={{ padding: 20 }}>
