@@ -1,23 +1,30 @@
-import { getAllInspectionTypes } from "@/src/db/queries/inspections";
-import InspectionType from "@/src/types/InspectionType";
-import { useEffect, useState } from "react"
-import { Text, View } from "react-native"
+import { useWorkOrderDb } from "@/src/context/WorkOrderDbContext";
+import { getAllInspections } from "@/src/db/queries/inspections";
+import { Inspection } from "@/src/types";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Text, View } from "react-native";
 
 function Inspections() {
-	const [ inspectionTypes, setInspectionTypes ] = useState<InspectionType[]>([]);
+	const { isReady: dbIsReady, error: dbError, db } = useWorkOrderDb();
+	const [ inspections, setInspections ] = useState<Inspection[]>([]);
 
 	useEffect(() => {
-		(async() => {
-			setInspectionTypes( await getAllInspectionTypes() )
-		})();
-	}, []);
+		if( dbIsReady ) {
+			(async() => {
+				setInspections( await getAllInspections( db ) )
+			})();
+		}
+	}, [ db, dbIsReady ]);
+	
+	if( dbError ) return <Text>Error: { dbError }</Text>;
+	if( !dbIsReady || !db ) return <ActivityIndicator />;
 
 	return (
 		<View>
 			<Text>Inspections</Text>
-			{inspectionTypes.map( inspectionType => (
-				<View key={ inspectionType.id }>
-					<Text>{ inspectionType.name }</Text>
+			{inspections.map( inspection => (
+				<View key={ inspection.id }>
+					<Text>{ inspection.name }</Text>
 				</View>
 			))}
 		</View>
