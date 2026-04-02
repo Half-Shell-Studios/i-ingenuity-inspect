@@ -30,8 +30,11 @@ export default function AppLayout() {
 			<Stack.Screen name="asset-tags/[assetTag]" options={{
 				title: "Asset Tag Details",
 			}} />
-			<Stack.Screen name="inspect" options={{
+			<Stack.Screen name="inspections" options={{
 				title: "Inspections",
+			}} />
+			<Stack.Screen name="inspections/[inspectionType]/create" options={{
+				title: "Inspect a Tag",
 			}} />
 		</Stack>
 	);
