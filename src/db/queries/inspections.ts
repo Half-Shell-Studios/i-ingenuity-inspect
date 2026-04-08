@@ -1,7 +1,6 @@
 import { inspectionsTable, inspectionTypesTable } from "@/src/db/schema";
 import { eq } from "drizzle-orm";
 import { AppDatabase } from "..";
-// import { getActiveDb } from "../index";
 
 export async function getAllInspections( db: AppDatabase | null ) {
 	if( !db ) return [];
@@ -29,4 +28,13 @@ export async function getInspectionsByAssetTag( db: AppDatabase | null, assetTag
 	return db.select().from( inspectionsTable ).where(
 		eq( inspectionsTable.assetTagId, assetTagId )
 	).all();
+}
+
+export async function createNewInspection( db: AppDatabase | null, tagId: string, inspectionTypeId: string ) {
+	if( !db ) return;
+
+	return await db.insert( inspectionsTable ).values({
+		assetTagId: tagId,
+		inspectionTemplateId: inspectionTypeId
+	});
 }
