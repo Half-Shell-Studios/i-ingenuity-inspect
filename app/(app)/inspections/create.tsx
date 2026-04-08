@@ -17,12 +17,12 @@ function CreateInspection() {
 	const { isReady: dbIsReady, error: dbError, db } = useWorkOrderDb();
 	const [ selectedType, setSelectedType ] = useState<string>('');
 
-	const startInspection = () => {
+	const startInspection = async () => {
 		console.log( "Asset Tag:", assetTag?.id );
 		console.log( "Inspection Type:", selectedType );
 		if( !assetTag?.id ) return;
 
-		const inspection = createNewInspection( db, assetTag?.id, selectedType );
+		const inspection = await createNewInspection( db, assetTag?.id, selectedType );
 
 		console.log( inspection );
 		console.log( "New Inspection: ", inspection.id );
