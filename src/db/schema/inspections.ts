@@ -3,9 +3,10 @@ import { inspectionTemplatesTable } from "@/src/db/schema/inspectionTemplates";
 import { usersTable } from "@/src/db/schema/users";
 import { relations } from "drizzle-orm";
 import { sqliteTable, text } from "drizzle-orm/sqlite-core";
+import * as Crypto from "expo-crypto";
 
 export const inspectionsTable = sqliteTable( 'inspections', {
-	id: text( 'id' ).primaryKey(),
+	id: text( 'id' ).$defaultFn(() => Crypto.randomUUID()).primaryKey(),
 	assetTagId: text( 'asset_tag_id' ).notNull(),
 	inspectionTemplateId: text( 'inspection_template_id' ).notNull(),
 	name: text( 'name' ).notNull(),
