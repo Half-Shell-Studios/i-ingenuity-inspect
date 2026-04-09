@@ -1,8 +1,9 @@
+import LinkButton from "@/src/components/LinkButton";
 import ScrollViewContainer from "@/src/components/ScrollViewContainer";
 import { useWorkOrderDb } from "@/src/context/WorkOrderDbContext";
 import * as locationsQuery from "@/src/db/queries/locations";
 import type { Location } from "@/src/types";
-import { Link, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
@@ -46,7 +47,12 @@ export default function WorkOrder() {
 	return (
 		<ScrollViewContainer>
 			<Text>Work Order: { workOrder }</Text>
-			<Link href={`/asset-tags`}>Asset Tags</Link>
+
+			<View style={{ marginBottom: 10 }}>
+				<LinkButton href={`/asset-tags`} label="Asset Tags" />
+			</View>
+			<LinkButton href={`/inspections`} label="Inspections" />
+			
 			<View style={{ marginBottom: 20 }}>
 				<Text style={ styles.lead }>Locations</Text>
 				{locations?.map( location => (
