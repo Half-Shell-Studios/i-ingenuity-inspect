@@ -36,8 +36,11 @@ export default function AppLayout() {
 			<Stack.Screen name="inspections/create" options={{
 				title: "Inspect a Tag",
 			}} />
-			<Stack.Screen name="inspections/edit" options={{
+			<Stack.Screen name="inspections/[inspection]/edit" options={{
 				title: "Inspect a Tag",
+			}} />
+			<Stack.Screen name="inspections/[inspection]/index" options={{
+				title: "Inspection Details",
 			}} />
 		</Stack>
 	);
