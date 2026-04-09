@@ -11,7 +11,7 @@ export const inspectionsTable = sqliteTable( 'inspections', {
 	assetTagId: text( 'asset_tag_id' ).notNull(),
 	inspectionTemplateId: text( 'inspection_template_id' ).notNull(),
 	name: text( 'name' ).notNull(),
-	assessment: text( 'assessment' , { mode: "json" }).$type<InspectionAnswers[]>().notNull(),
+	assessment: text( 'assessment', { mode: "json" }).$type<InspectionAnswers[]>().notNull(),
 	notes: text( 'notes' ),
 	inspectedBy: text( 'inspected_by' ).notNull(),
 });
