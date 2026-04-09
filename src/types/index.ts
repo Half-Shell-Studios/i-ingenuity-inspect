@@ -5,7 +5,7 @@ export * from "./AssetTemplateRevision";
 export * from "./Fault";
 // export * from "./faultCodes";
 export * from "./Inspection";
-// export * from "./inspectionTemplates";
+export * from "./InspectionTemplate";
 // export * from "./inspectionTemplateRevisions";
 export * from "./InspectionType";
 export * from "./Location";
