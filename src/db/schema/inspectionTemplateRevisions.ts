@@ -6,8 +6,10 @@ export const inspectionTemplateRevisionsTable = sqliteTable( 'inspection_templat
 	inspectionTypeId: text( 'inspection_type_id' ).notNull(),
 	name: text( 'name' ).notNull(),
 	description: text( 'description' ).notNull(),
-	criteria: text( 'criteria' , { mode: "json" }),
-	template: text( 'template' , { mode: "json" }).notNull(),
+	// criteria: text( 'criteria' , { mode: "json" }),
+	criteria: text( 'criteria' ),
+	// template: text( 'template', { mode: "json" }).notNull(),
+	template: text( 'template' ).notNull(),
 });
 
 export default inspectionTemplateRevisionsTable;
