@@ -10,7 +10,7 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Text, TouchableOpacity } from "react-native";
 
-function Inspections() {
+function InspectionsIndex() {
 	const router = useRouter();
 	const { isReady: dbIsReady, error: dbError, db } = useWorkOrderDb();
 	const [ inspections, setInspections ] = useState<Inspection[]>([]);
@@ -51,4 +51,4 @@ function Inspections() {
 	);
 }
 
-export default Inspections
+export default InspectionsIndex
