@@ -1,6 +1,7 @@
 import { assetTagsTable } from "@/src/db/schema/assetTags";
 import { inspectionTemplatesTable } from "@/src/db/schema/inspectionTemplates";
 import { usersTable } from "@/src/db/schema/users";
+import type { InspectionAnswers } from "@/src/types/Inspection";
 import { relations } from "drizzle-orm";
 import { sqliteTable, text } from "drizzle-orm/sqlite-core";
 import * as Crypto from "expo-crypto";
@@ -10,7 +11,7 @@ export const inspectionsTable = sqliteTable( 'inspections', {
 	assetTagId: text( 'asset_tag_id' ).notNull(),
 	inspectionTemplateId: text( 'inspection_template_id' ).notNull(),
 	name: text( 'name' ).notNull(),
-	answers: text( 'answers' , { mode: "json" }).notNull(),
+	assessment: text( 'assessment' , { mode: "json" }).$type<InspectionAnswers[]>().notNull(),
 	notes: text( 'notes' ),
 	inspectedBy: text( 'inspected_by' ).notNull(),
 });
