@@ -7,6 +7,6 @@ export const usersTable = sqliteTable( 'users', {
 	avatar: text( 'avatar' ),
 	developer: integer( 'developer' , { mode: "boolean" }).default(false),
 	language: text( 'language' ).default("eng"),
-	settings: text( 'settings' , { mode: "json" }),
+	settings: text( 'settings', { mode: "json" }),
 	roleId: text( 'role_id' ).notNull(),
 });
