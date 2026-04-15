@@ -8,6 +8,7 @@ export const assetTagsTable = sqliteTable( 'asset_tags', {
 	id: text( 'id' ).primaryKey(),
 	locationId: text( 'location_id' ).notNull(),
 	assetTemplateId: text( 'asset_template_id' ).notNull(),
+	assetTemplateRevisionId: text( 'asset_template_revision_id' ).notNull(),
 	name: text( 'name' ).notNull(),
 	rfid: text( 'rfid' ),
 	description: text( 'description' ),
