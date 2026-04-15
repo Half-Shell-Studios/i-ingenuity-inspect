@@ -29,7 +29,7 @@ function InspectionsIndex() {
 	return (
 		<ScrollViewContainer>
 			<ScreenTitle title="Inspections" />
-			{ inspections?.length && (
+			{ inspections?.length ? (
 				<CardsContainer>
 					{inspections.map( inspection => {
 						return (
@@ -46,7 +46,7 @@ function InspectionsIndex() {
 						)
 					})}
 				</CardsContainer>
-			)}
+			) : null }
 		</ScrollViewContainer>
 	);
 }
