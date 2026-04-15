@@ -9,7 +9,12 @@ import * as Crypto from "expo-crypto";
 export const inspectionsTable = sqliteTable( 'inspections', {
 	id: text( 'id' ).$defaultFn(() => Crypto.randomUUID()).primaryKey(),
 	assetTagId: text( 'asset_tag_id' ).notNull(),
+	assetTemplateId: text( 'asset_template_id' ).notNull(),
+	assetTemplateRevisionId: text( 'asset_template_revision_id' ).notNull(),
+	inspectionTypeId: text( 'inspection_type_id' ).notNull(),
 	inspectionTemplateId: text( 'inspection_template_id' ).notNull(),
+	inspectionTemplateRevisionId: text( 'inspection_template_revision_id' ).notNull(),
+	locationId: text( 'location_id' ).notNull(),
 	name: text( 'name' ).notNull(),
 	assessment: text( 'assessment', { mode: "json" }).$type<InspectionAnswers[]>().notNull(),
 	notes: text( 'notes' ),
