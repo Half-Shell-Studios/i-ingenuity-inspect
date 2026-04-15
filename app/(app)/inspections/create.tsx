@@ -26,21 +26,22 @@ function CreateInspection() {
 	const startInspection = async () => {
 		const now = new Date;
 
+		if( !user ) return;
 		if( !assetTag?.id ) return;
 		if( !selectedTemplate ) return;
 
 		const result = await createNewInspection( db, {
-			assetTagId: assetTag?.id,
-			assetTemplateId: assetTag?.assetTemplateId,
-			assetTemplateRevisionId: assetTag?.assetTemplateRevisionId,
+			assetTagId: assetTag.id,
+			assetTemplateId: assetTag.assetTemplateId,
+			assetTemplateRevisionId: assetTag.assetTemplateRevisionId,
 			inspectionTypeId: selectedType,
 			inspectionTemplateId: selectedTemplate,
 			inspectionTemplateRevisionId: selectedTemplateRevision,
-			locationId: assetTag?.locationId,
+			locationId: assetTag.locationId,
 			name: `${ assetTag.name } ${ String( now.getDate() ).padStart( 2, '0' ) }-${ String( now.getMonth() ).padStart( 2, '0' ) }-${ now.getFullYear() } ${ String( now.getHours() ).padStart( 2, '0' ) }:${ String( now.getMinutes() ).padStart( 2, '0' ) }`,
 			assessment: [],
 			notes: '',
-			inspectedBy: user?.id
+			inspectedBy: user.id
 		});
 
 		if( !result ) return;
