@@ -21,6 +21,7 @@ function CreateInspection() {
 	const { isReady: dbIsReady, error: dbError, db } = useWorkOrderDb();
 	const [ selectedType, setSelectedType ] = useState<string>('');
 	const [ selectedTemplate, setSelectedTemplate ] = useState<string>('');
+	const [ selectedTemplateRevision, setSelectedTemplateRevision ] = useState<string>('');
 
 	const startInspection = async () => {
 		const now = new Date;
@@ -30,9 +31,15 @@ function CreateInspection() {
 
 		const result = await createNewInspection( db, {
 			assetTagId: assetTag?.id,
+			assetTemplateId: assetTag?.assetTemplateId,
+			assetTemplateRevisionId: assetTag?.assetTemplateRevisionId,
+			inspectionTypeId: selectedType,
 			inspectionTemplateId: selectedTemplate,
+			inspectionTemplateRevisionId: selectedTemplateRevision,
+			locationId: assetTag?.locationId,
 			name: `${ assetTag.name } ${ String( now.getDate() ).padStart( 2, '0' ) }-${ String( now.getMonth() ).padStart( 2, '0' ) }-${ now.getFullYear() } ${ String( now.getHours() ).padStart( 2, '0' ) }:${ String( now.getMinutes() ).padStart( 2, '0' ) }`,
 			assessment: [],
+			notes: '',
 			inspectedBy: user?.id
 		});
 
@@ -48,6 +55,11 @@ function CreateInspection() {
 			(async() => {
 				setInspectionTypes( await getAllInspectionTypes( db ) )
 			})();
+		}
+	}, [ db, dbIsReady ]);
+	
+	useEffect(() => {
+		if( dbIsReady ) {
 			(async() => {
 				setAssetTag( await getAssetTagById( db, assetTagId ) )
 			})();
@@ -65,6 +77,10 @@ function CreateInspection() {
 	useEffect(() => {
 		setSelectedTemplate('');
 	}, [ selectedType ])
+
+	useEffect(() => {
+		setSelectedTemplateRevision( `test-${ selectedTemplate }` );
+	}, [ selectedTemplate ]);
 
 	if( dbError ) return <Text>Error: { dbError }</Text>;
 	if( !dbIsReady || !db ) return <ActivityIndicator />;
