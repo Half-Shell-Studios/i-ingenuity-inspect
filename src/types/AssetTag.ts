@@ -10,6 +10,7 @@ export interface AssetTag {
 	height: string,
 	vintage: number,
 	assetTemplateId: string,
+	assetTemplateRevisionId: string,
 	assetTemplate: AssetTemplate,
 	faults?: Fault[],
 	faultsOpen?: Fault[],
