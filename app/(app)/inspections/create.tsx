@@ -70,16 +70,19 @@ function CreateInspection() {
 		if( dbIsReady ) {
 			(async() => {
 				setInspectionTemplates( await getInspectionTemplatesByInspectionType( db, selectedType ) );
-			})(); 
+			})();
 		}
-	}, [ dbIsReady, db, selectedType ]);
+	}, [ db, dbIsReady, selectedType ]);
 
 	useEffect(() => {
 		setSelectedTemplate('');
 	}, [ selectedType ])
 
 	useEffect(() => {
-		setSelectedTemplateRevision( `test-${ selectedTemplate }` );
+		if( inspectionTemplates?.length > 0 ) {
+			const _inspectionTemplateRevision = inspectionTemplates.find( template => template.id === selectedTemplate );
+			setSelectedTemplateRevision( _inspectionTemplateRevision?.id ?? '' );
+		}
 	}, [ selectedTemplate ]);
 
 	if( dbError ) return <Text>Error: { dbError }</Text>;
