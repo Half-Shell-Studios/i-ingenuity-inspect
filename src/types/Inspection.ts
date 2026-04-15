@@ -13,7 +13,12 @@ export interface InspectionAnswers {
 export interface Inspection {
 	id: string,
 	assetTagId: string,
+	assetTemplateId: string,
+	assetTemplateRevisionId: string,
 	inspectionTemplateId: string,
+	inspectionTemplateRevisionId: string,
+	inspectionTypeId: string,
+	locationId: string,
 	name: string,
 	assessment: InspectionAnswers[],
 	notes: string | null,
