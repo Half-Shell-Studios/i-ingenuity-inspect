@@ -1,3 +1,7 @@
+import Card from "@/src/components/Card";
+import CardsContainer from "@/src/components/CardsContainer";
+import CardTitle from "@/src/components/CardTitle";
+import GridRow from "@/src/components/GridRow";
 import LinkButton from "@/src/components/LinkButton";
 import ScreenTitle from "@/src/components/ScreenTitle";
 import ScrollViewContainer from "@/src/components/ScrollViewContainer";
@@ -5,12 +9,13 @@ import { useWorkOrderDb } from "@/src/context/WorkOrderDbContext";
 import * as locationsQuery from "@/src/db/queries/locations";
 import type { Location } from "@/src/types";
 import { useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
 export default function WorkOrder() {
 	const { workOrder } = useLocalSearchParams<{ workOrder: string }>();
 	const { db, isReady, error } = useWorkOrderDb();
+	const [ parsedLocations, setParsedLocations ] = useState<Array>([]);
 	const [ locations, setLocations ] = useState<Location[]>();
 	const [ customers, setCustomers ] = useState<Location[]>();
 	const [ sites, setSites ] = useState<Location[]>();
@@ -28,6 +33,51 @@ export default function WorkOrder() {
 			})();
 		}
 	}, [ isReady, db ]);
+
+	useEffect(() => {
+		if( ( locations?.length ?? 0 ) > 0 ) {
+			const _parsedLocations = locations?.map( location => ({
+				"id": location.id,
+				"customer": location.customerName,
+				"site": location.siteName,
+				"plant": location.plantName,
+				"area": location.areaName,
+			}))
+
+			const _groupedLocations = {};
+
+			for( const item of _parsedLocations ) {
+				const { id, customer, site, plant, area } = item;
+
+				if( !_groupedLocations[customer] ) {
+					_groupedLocations[customer] = { id, customer, sites: {} };
+				}
+				if( !_groupedLocations[customer].sites[site] ) {
+					_groupedLocations[customer].sites[site] = { site, plants: {} };
+				}
+				if( !_groupedLocations[customer].sites[site].plants[plant] ) {
+					_groupedLocations[customer].sites[site].plants[plant] = { plant, areas: [] };
+				}
+
+				_groupedLocations[customer].sites[site].plants[plant].areas.push(area);
+			}
+
+			// Convert the intermediate lookup objects into arrays
+			const _result = Object.values( _groupedLocations ).map( customer => ({
+				id: customer.id,
+				customer: customer.customer,
+				sites: Object.values( customer.sites ).map( site => ({
+					site: site.site,
+					plants: Object.values( site.plants ).map( plant => ({
+						plant: plant.plant,
+						areas: plant.areas,
+					})),
+				})),
+			}));
+
+			setParsedLocations( _result );
+		}
+	}, [ locations ])
 
 	if( error ) {
 		return (
@@ -48,14 +98,52 @@ export default function WorkOrder() {
 	return (
 		<ScrollViewContainer>
 			<ScreenTitle title="Work Order" />
-			<Text>Work Order: { workOrder }</Text>
+			{/* <Text>Work Order: { workOrder }</Text> */}
 
 			<View style={{ marginBottom: 10 }}>
 				<LinkButton href={`/asset-tags`} label="Asset Tags" />
 			</View>
-			<LinkButton href={`/inspections`} label="Inspections" />
-			
+			<View style={{ marginBottom: 30 }}>
+				<LinkButton href={`/inspections`} label="Inspections" />
+			</View>
+
 			<View style={{ marginBottom: 20 }}>
+				<Text style={ styles.lead }>Locations</Text>
+				<CardsContainer>
+					{parsedLocations?.length > 0 && parsedLocations?.map( customer => (
+						<Card key={ customer.id }>
+							<View style={{ marginBottom: 10 }}>
+								<Text style={ styles.lead }>Customer</Text>
+								<CardTitle title={ customer.customer } />
+							</View>
+							<Text style={ styles.lead }>Sites</Text>
+							<GridRow>
+								{customer.sites?.length > 0 && customer.sites?.map(( site: string, index: number ) => (
+									<View key={ `sites-${ index }` } style={{ flex: 1, marginBottom: 30 }}>
+										<CardTitle title={ site.site } />
+										
+										{ site?.plants?.length > 0 && site.plants?.map(( plant: string, index: number ) => (
+											<View key={ `plants-${ index }` } style={{ flex: 1, marginBottom: 30 }}>
+												<Text style={ styles.lead }>Plant</Text>
+												<CardTitle title={ plant.plant } />
+
+												<Text style={ styles.lead }>Areas</Text>
+												{ plant?.areas?.length > 0 && plant?.areas?.map(( area: string, index: number ) => (
+													<Fragment key={ `plants-${ index }` }>
+														<Text>{ area }</Text>
+													</Fragment>
+												))}
+											</View>
+										))}
+									</View>
+								))}
+							</GridRow>
+						</Card>
+					))}
+				</CardsContainer>
+			</View>
+			
+			{/* <View style={{ marginBottom: 20 }}>
 				<Text style={ styles.lead }>Locations</Text>
 				{locations?.map( location => (
 					<View key={ location.id }>
@@ -104,7 +192,7 @@ export default function WorkOrder() {
 						</Text>
 					</View>
 				))}
-			</View>
+			</View> */}
 		</ScrollViewContainer>
 	);
 }
@@ -112,7 +200,8 @@ export default function WorkOrder() {
 const styles = StyleSheet.create({
 	lead: {
 		fontSize: 12,
-		color: "rgba(0, 0, 0, 0.5)"
+		color: "rgba(0, 0, 0, 0.5)",
+		marginBottom: 5
 	},
 	title: {
 		fontSize: 22,
