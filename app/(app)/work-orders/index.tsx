@@ -2,12 +2,13 @@ import { workOrdersApi } from "@/src/api/workOrders";
 import Card from "@/src/components/Card";
 import CardsContainer from "@/src/components/CardsContainer";
 import CardTitle from "@/src/components/CardTitle";
+import ScreenTitle from "@/src/components/ScreenTitle";
 import ScrollViewContainer from "@/src/components/ScrollViewContainer";
 import { useWorkOrderDb } from "@/src/context/WorkOrderDbContext";
 import type { WorkOrder } from "@/src/types";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, TouchableOpacity, View } from "react-native";
 
 function WorkOrdersIndex() {
 	const router = useRouter();
@@ -57,7 +58,7 @@ function WorkOrdersIndex() {
 
 	return (
 		<ScrollViewContainer>
-			<Text>Work Orders</Text>
+			<ScreenTitle title="Work Orders" />
 			<CardsContainer>
 				{workOrders.map( workOrder  => (
 					<TouchableOpacity key={ workOrder.id } disabled={ downloading !== null } onPress={ () => handlePress( workOrder ) }>
