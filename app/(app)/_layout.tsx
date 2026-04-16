@@ -42,6 +42,9 @@ export default function AppLayout() {
 			<Stack.Screen name="inspections/[inspection]/index" options={{
 				title: "Inspection Details",
 			}} />
+			<Stack.Screen name="faults/[fault]" options={{
+				title: "Close a Fault",
+			}} />
 		</Stack>
 	);
 }
