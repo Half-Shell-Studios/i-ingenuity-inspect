@@ -1,6 +1,6 @@
 import { StyleSheet, Text } from "react-native";
 
-function CardTitle({ title }: { title: string }) {
+function CardTitle({ title }: { title: string | number }) {
 
 	return (
 		<Text style={ styles.cardTitle }>
