@@ -1,4 +1,5 @@
 import LinkButton from "@/src/components/LinkButton";
+import ScreenTitle from "@/src/components/ScreenTitle";
 import ScrollViewContainer from "@/src/components/ScrollViewContainer";
 import { useWorkOrderDb } from "@/src/context/WorkOrderDbContext";
 import * as locationsQuery from "@/src/db/queries/locations";
@@ -46,6 +47,7 @@ export default function WorkOrder() {
 
 	return (
 		<ScrollViewContainer>
+			<ScreenTitle title="Work Order" />
 			<Text>Work Order: { workOrder }</Text>
 
 			<View style={{ marginBottom: 10 }}>
