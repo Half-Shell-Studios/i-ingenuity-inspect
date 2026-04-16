@@ -1,5 +1,6 @@
 import type AssetTemplate from "./AssetTemplate";
 import type Fault from "./Fault";
+import { FaultSection } from "./Fault";
 
 export interface AssetTag {
 	id: string,
@@ -14,7 +15,9 @@ export interface AssetTag {
 	assetTemplate: AssetTemplate,
 	faults?: Fault[],
 	faultsOpen?: Fault[],
+	faultsOpenBySection?: FaultSection[],
 	faultsClosed?: Fault[],
+	faultsClosedBySection?: FaultSection[],
 }
 
 export default AssetTag;
