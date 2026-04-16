@@ -1,3 +1,6 @@
+import Card from "@/src/components/Card";
+import CardsContainer from "@/src/components/CardsContainer";
+import CardTitle from "@/src/components/CardTitle";
 import GridRow from "@/src/components/GridRow";
 import ScrollViewContainer from "@/src/components/ScrollViewContainer";
 import { useWorkOrderDb } from "@/src/context/WorkOrderDbContext";
@@ -26,93 +29,99 @@ function AssetTagShow() {
 
 	return (
 		<ScrollViewContainer>
-			<GridRow>
-				<View style={{ flex: 1 }}>
-					<Text style={ styles.lead }>Asset Tag</Text>
-					<Text style={ styles.title }>{ assetTag?.name }</Text>
-					{!!( assetTag?.description ) && (
-						<Text>{ assetTag?.description }</Text>
-					)}
-				</View>
-				<View style={{ flex: 0 }}>
-					<TouchableOpacity style={ styles.button } onPress={() => router.push({ pathname: `/inspections/create`, params: { assetTag: assetTag?.id } })}>
-						<Text style={ styles.buttonText }>Inspect</Text>
-					</TouchableOpacity>
-				</View>
-			</GridRow>
-			<GridRow>
-				<View style={{ flex: 1 }}>
-					<Text style={ styles.lead }>Tag Height</Text>
-					<Text style={ styles.title }>{ assetTag?.height }</Text>
-				</View>
-				<View style={{ flex: 1 }}>
-					<Text style={ styles.lead }>Tag Vintage</Text>
-					<Text style={ styles.title }>{ assetTag?.vintage }</Text>
-				</View>
-			</GridRow>
-
-			<Text style={ styles.lead }>Asset Template</Text>
-			<Text style={ styles.title }>
-				{ assetTag?.assetTemplate?.revisionActive?.manufacturer } { assetTag?.assetTemplate?.revisionActive?.model }
-			</Text>
-			{!!( assetTag?.assetTemplate?.revisionActive?.description ) && (
-				<Text>{ assetTag?.assetTemplate?.revisionActive?.description }</Text>
-			)}
-			<View style={{ flexDirection: 'row', marginBottom: 10 }}>
-				<View style={{ flex: 1 }}>
-					<Text style={ styles.lead }>Faults</Text>
-					<Text>{ assetTag?.faults?.length }</Text>
-				</View>
-				<View style={{ flex: 1 }}>
-					<Text style={ styles.lead }>Faults Open</Text>
-					<Text>{ assetTag?.faultsOpen?.length }</Text>
-				</View>
-				<View style={{ flex: 1 }}>
-					<Text style={ styles.lead }>Faults Closed</Text>
-					<Text>{ assetTag?.faultsClosed?.length }</Text>
-				</View>
+			<View style={{ marginBottom: 20 }}>
+				<GridRow>
+					<View style={{ flex: 1 }}>
+						<Text style={ styles.lead }>Asset Tag</Text>
+						<Text style={ styles.title }>{ assetTag?.name }</Text>
+						{!!( assetTag?.description ) && (
+							<Text>{ assetTag?.description }</Text>
+						)}
+					</View>
+					<View style={{ flex: 0 }}>
+						<TouchableOpacity style={ styles.button } onPress={() => router.push({ pathname: `/inspections/create`, params: { assetTag: assetTag?.id } })}>
+							<Text style={ styles.buttonText }>Inspect</Text>
+						</TouchableOpacity>
+					</View>
+				</GridRow>
 			</View>
-			{( !!( assetTag?.faultsOpen?.length ) || !!( assetTag?.faultsClosed?.length ) ) && (<>
-				<Text style={ styles.lead }>Faults</Text>
-				{( !!( ( assetTag?.faultsOpen?.length ?? 0 ) > 0 ) ) && (<>
-					<Text style={ styles.title }>
-						Open Faults
-					</Text>
-					{assetTag?.faultsOpen?.map(( fault, index ) => (
-						<View style={{ flexDirection: 'row', columnGap: 4 }} key={ fault.id }>
-							<View style={{ flex: 0 }}>
-								<Text>{ String( ( index + 1 ) ).padStart( 2, '0' ) }.</Text>
-							</View>
+			<CardsContainer>
+				<Card>
+					<GridRow>
+						{ assetTag?.height && (
 							<View style={{ flex: 1 }}>
-								<Text>{ fault.section }</Text>
-								<Text style={ styles.title }>{ fault.question }</Text>
-								<Text>{ fault.raisedComment }</Text>
+								<Text style={ styles.lead }>Tag Height</Text>
+								<CardTitle title={ assetTag.height } />
 							</View>
-						</View>
-					))}
-				</>)}
-				{( !!( ( assetTag?.faultsClosed?.length ?? 0 ) > 0 ) ) && (<>
-					<Text style={ styles.title }>
-						Closed Faults
-					</Text>
-					{assetTag?.faultsClosed?.map(( fault, index ) => (
-						<View style={{ flexDirection: 'row', columnGap: 4 }} key={ fault.id }>
-							<View style={{ flex: 0 }}>
-								<Text>{ String( ( index + 1 ) ).padStart( 2, '0' ) }.</Text>
-							</View>
+						)}
+						{ assetTag?.vintage && (
 							<View style={{ flex: 1 }}>
-								<Text>{ fault.section }</Text>
-								<Text style={ styles.title }>{ fault.question }</Text>
-								<Text>{ fault.raisedComment }</Text>
+								<Text style={ styles.lead }>Tag Vintage</Text>
+								<CardTitle title={ assetTag.vintage } />
 							</View>
-						</View>
-					))}
-				</>)}
-			</>)}
+						)}
+					</GridRow>
+				</Card>
 
-			{/* <Text>AssetTag:</Text> */}
-			{/* <Text>{ JSON.stringify( assetTagId ) }</Text> */}
-			{/* <Text>{ JSON.stringify( assetTag ) }</Text> */}
+				<Card>
+					<Text style={ styles.lead }>Asset Template</Text>
+					<CardTitle title={ `${ assetTag?.assetTemplate?.revisionActive?.manufacturer } ${ assetTag?.assetTemplate?.revisionActive?.model }` } />
+					{!!( assetTag?.assetTemplate?.revisionActive?.description ) && (
+						<Text>{ assetTag?.assetTemplate?.revisionActive?.description }</Text>
+					)}
+				</Card>
+			
+				<Card>
+					<View style={{ marginBottom: 20 }}>
+						<Text style={ styles.lead }>Faults</Text>
+					</View>
+
+					<View style={{ marginBottom: 20 }}>
+						<GridRow>
+							<View style={{ flex: 1 }}>
+								<Text style={ styles.lead }>Faults Open</Text>
+								<CardTitle title={ assetTag?.faultsOpen?.length ?? 0 } />
+							</View>
+							<View style={{ flex: 1 }}>
+								<Text style={ styles.lead }>Faults Closed</Text>
+								<CardTitle title={ assetTag?.faultsClosed?.length ?? 0 } />
+							</View>
+						</GridRow>
+					</View>
+
+					<View style={{ marginBottom: 20 }}>
+						<CardTitle title="Open Faults" />
+						{assetTag?.faultsOpen?.map(( fault, index ) => (
+							<View style={{ flexDirection: 'row', columnGap: 4 }} key={ fault.id }>
+								<View style={{ flex: 0 }}>
+									<Text>{ String( ( index + 1 ) ).padStart( 2, '0' ) }.</Text>
+								</View>
+								<View style={{ flex: 1 }}>
+									<Text>{ fault.section }</Text>
+									<Text style={ styles.title }>{ fault.question }</Text>
+									<Text>{ fault.raisedComment }</Text>
+								</View>
+							</View>
+						))}
+					</View>
+					
+					<View style={{ marginBottom: 20 }}>
+						<CardTitle title="Closed Faults" />
+						{assetTag?.faultsClosed?.map(( fault, index ) => (
+							<View style={{ flexDirection: 'row', columnGap: 4 }} key={ fault.id }>
+								<View style={{ flex: 0 }}>
+									<Text>{ String( ( index + 1 ) ).padStart( 2, '0' ) }.</Text>
+								</View>
+								<View style={{ flex: 1 }}>
+									<Text>{ fault.section }</Text>
+									<Text style={ styles.title }>{ fault.question }</Text>
+									<Text>{ fault.closedComment }</Text>
+								</View>
+							</View>
+						))}
+					</View>
+				</Card>
+			</CardsContainer>
 		</ScrollViewContainer>
 	)
 }
