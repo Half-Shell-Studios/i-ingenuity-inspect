@@ -11,7 +11,7 @@ export async function getOpenFaults( db: AppDatabase | null ) {
 	).all();
 }
 
-export async function closeFault( db: AppDatabase | null, id: string, userId: string, comment: string ) {
+export async function closeFault( db: AppDatabase | null, faultId: string, userId: string, comment: string ) {
 	if( !db ) return;
 
 	return db.update( faultsTable ).set({
@@ -19,6 +19,6 @@ export async function closeFault( db: AppDatabase | null, id: string, userId: st
 		closedBy: userId,
 		closedComment: comment,
 	}).where(
-		eq( faultsTable.id, id )
+		eq( faultsTable.id, faultId )
 	).run();
 }
