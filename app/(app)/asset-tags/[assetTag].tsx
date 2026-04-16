@@ -2,13 +2,14 @@ import Card from "@/src/components/Card";
 import CardsContainer from "@/src/components/CardsContainer";
 import CardTitle from "@/src/components/CardTitle";
 import GridRow from "@/src/components/GridRow";
+import LinkButton from "@/src/components/LinkButton";
 import ScrollViewContainer from "@/src/components/ScrollViewContainer";
 import { useWorkOrderDb } from "@/src/context/WorkOrderDbContext";
 import { getAssetTagById } from "@/src/db/queries/assetTags";
 import AssetTag from "@/src/types/AssetTag";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 function AssetTagShow() {
 	const router = useRouter();
@@ -89,37 +90,54 @@ function AssetTagShow() {
 						</GridRow>
 					</View>
 
-					<View style={{ marginBottom: 20 }}>
-						<CardTitle title="Open Faults" />
-						{assetTag?.faultsOpen?.map(( fault, index ) => (
-							<View style={{ flexDirection: 'row', columnGap: 4 }} key={ fault.id }>
-								<View style={{ flex: 0 }}>
-									<Text>{ String( ( index + 1 ) ).padStart( 2, '0' ) }.</Text>
-								</View>
-								<View style={{ flex: 1 }}>
-									<Text>{ fault.section }</Text>
-									<Text style={ styles.title }>{ fault.question }</Text>
-									<Text>{ fault.raisedComment }</Text>
-								</View>
+					{ ( assetTag?.faultsOpen?.length ?? 0 ) > 0 && (
+						<View style={{ marginBottom: 30 }}>
+							<View style={{ marginBottom: 10 }}>
+								<CardTitle title="Open Faults" />
 							</View>
-						))}
-					</View>
-					
-					<View style={{ marginBottom: 20 }}>
-						<CardTitle title="Closed Faults" />
-						{assetTag?.faultsClosed?.map(( fault, index ) => (
-							<View style={{ flexDirection: 'row', columnGap: 4 }} key={ fault.id }>
-								<View style={{ flex: 0 }}>
-									<Text>{ String( ( index + 1 ) ).padStart( 2, '0' ) }.</Text>
+							{assetTag?.faultsOpenBySection?.map(( section, index ) => (
+								<View key={`fault-section-${ index }`}>
+									<Text style={ styles.lead }>{ section.sectionName }</Text>
+									{section.faults.map(( fault, index ) => (
+										<View style={{ flexDirection: 'row', columnGap: 4, marginBottom: 5 }} key={ fault.id }>	
+											<View style={{ flex: 0 }}>
+												<Text>{ String( ( index + 1 ) ).padStart( 2, '0' ) }.</Text>
+											</View>
+											<View style={{ flex: 1 }}>
+												<Text>{ fault.question }</Text>
+												<Text>{ fault.raisedComment }</Text>
+											</View>
+											<View style={{ flex: 0 }}>
+												<LinkButton label="Close" href={`/(app)/faults/${ fault.id }`} />
+											</View>
+										</View>
+									))}
 								</View>
-								<View style={{ flex: 1 }}>
-									<Text>{ fault.section }</Text>
-									<Text style={ styles.title }>{ fault.question }</Text>
-									<Text>{ fault.closedComment }</Text>
+							))}
+						</View>
+					)}
+					{( assetTag?.faultsClosed?.length ?? 0 ) > 0 && (
+						<View style={{ marginBottom: 20 }}>
+							<CardTitle title="Closed Faults" />
+							{assetTag?.faultsClosedBySection?.map(( section, index ) => (
+								<View key={`fault-section-${ index }`}>
+									<Text>{ section.sectionName }</Text>
+									{section.faults.map( fault => (
+										<View style={{ flexDirection: 'row', columnGap: 4 }} key={ fault.id }>	
+											<View style={{ flex: 0 }}>
+												<Text>{ String( ( index + 1 ) ).padStart( 2, '0' ) }.</Text>
+											</View>
+											<View style={{ flex: 1 }}>
+												<Text>{ fault.question }</Text>
+												<Text>{ fault.closedComment }</Text>
+											</View>
+										</View>
+									))}
 								</View>
-							</View>
-						))}
-					</View>
+							))}
+						</View>
+					)}
+
 				</Card>
 			</CardsContainer>
 		</ScrollViewContainer>
