@@ -1,6 +1,7 @@
 export interface InspectionTemplate {
 	id: string,
 	revisionActiveId: string,
+	revisionActive?: InspectionTemplateRevision,
 	revisionLatestId: string
 }
 
