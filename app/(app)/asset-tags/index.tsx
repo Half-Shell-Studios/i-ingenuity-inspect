@@ -3,9 +3,9 @@ import CardsContainer from "@/src/components/CardsContainer";
 import { useWorkOrderDb } from "@/src/context/WorkOrderDbContext";
 import { getAllAssetTags } from "@/src/db/queries/assetTags";
 import AssetTag from "@/src/types/AssetTag";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { Fragment, useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity } from "react-native";
+import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function AssetTagsIndex() {
 	const router = useRouter();
@@ -22,7 +22,11 @@ export default function AssetTagsIndex() {
 
 	
 	if( dbError ) return <Text>Error: { dbError }</Text>;
-	if( !dbIsReady || !db ) return <ActivityIndicator />;
+	if( !dbIsReady || !db || ( dbIsReady && ( tags?.length < 1 ) ) ) return (
+		<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+			<ActivityIndicator />
+		</View>
+	);
 
 	return (
 		<ScrollView style={{ padding: 20 }}>
@@ -60,9 +64,6 @@ export default function AssetTagsIndex() {
 									</Fragment>
 								))}
 							</>)}
-							<Link href="/inspections">
-								Inspect { tag.name }
-							</Link>
 						</Card>
 					</TouchableOpacity>
 				))}
