@@ -13,4 +13,9 @@ export interface Fault {
 	closedComment: string | null,
 }
 
+export interface FaultSection {
+	sectionName: string,
+	faults: Fault[]
+}
+
 export default Fault;
