@@ -22,4 +22,10 @@ export interface Area {
 	areaName: string;
 }
 
+export interface GroupedLocations {
+	id: string,
+	customer: Customer,
+	sites: Site[]
+}
+
 export default Location;
