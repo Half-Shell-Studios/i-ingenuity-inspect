@@ -7,15 +7,26 @@ import ScrollViewContainer from "@/src/components/ScrollViewContainer";
 import { useWorkOrderDb } from "@/src/context/WorkOrderDbContext";
 import { getAssetTagById } from "@/src/db/queries/assetTags";
 import AssetTag from "@/src/types/AssetTag";
+import { Image, useImage } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Button, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from "react-native";
 
 function AssetTagShow() {
 	const router = useRouter();
+	const { width: screenWidth, height: screenHeight } = useWindowDimensions();
 	const { assetTag: assetTagId }: { assetTag: string } = useLocalSearchParams();
 	const [ assetTag, setAssetTag ] = useState<AssetTag>();
 	const { isReady: dbIsReady, error: dbError, db } = useWorkOrderDb();
+	const [ cardWidth, setCardWidth ] = useState<number>(screenWidth);
+	const sampleImage = useImage( require('@/assets/images/sample-image.jpg'), {
+		maxWidth: Math.min(360, cardWidth),
+		maxHeight: Math.min(480, screenHeight),
+	});
+
+	useEffect(() => {
+		setCardWidth( screenWidth - 40 );
+	}, [ screenWidth ]);
 
 	useEffect(() => {
 		if( dbIsReady ) {
@@ -118,7 +129,9 @@ function AssetTagShow() {
 					)}
 					{( assetTag?.faultsClosed?.length ?? 0 ) > 0 && (
 						<View style={{ marginBottom: 20 }}>
-							<CardTitle title="Closed Faults" />
+							<View style={{ marginBottom: 10 }}>
+								<CardTitle title="Closed Faults" />
+							</View>
 							{assetTag?.faultsClosedBySection?.map(( section, index ) => (
 								<View key={`fault-section-${ index }`}>
 									<Text>{ section.sectionName }</Text>
@@ -138,6 +151,30 @@ function AssetTagShow() {
 						</View>
 					)}
 
+				</Card>
+					{/* {( assetTag?.attachments?.length ?? 0 ) > 0 && (
+					)} */}
+				<Card>
+					<View>
+						<View style={{ marginBottom: 10 }}>
+							<CardTitle title="Attachments" />
+						</View>
+						{/* <ScrollView horizontal pagingEnabled snapToAlignment="start" snapToInterval={ cardWidth * 0.75 + 10 } decelerationRate="fast" showsHorizontalScrollIndicator={ false }> */}
+						<ScrollView horizontal pagingEnabled={ true } showsHorizontalScrollIndicator={ false } snapToAlignment="start">
+							{Array.from({ length: 5 }).map((_, index) => (
+								<View key={ index } style={{ width: 360 }}>
+									<View key={ index } style={{ paddingRight: 10 }}>
+										{ sampleImage && (<>
+											{/* TODO: Implement a lightbox style function for the image. */}
+											{/* TODO: Implement a pinch to zoom function for the image. */}
+											<Image source={ sampleImage } style={{ ...styles.image, width: ( sampleImage.width - 10 ), aspectRatio: ( sampleImage.width / sampleImage.height ) }} />
+											<Text>Sample Image { index + 1 }</Text>
+										</>)}
+									</View>
+								</View>
+							))}
+						</ScrollView>
+					</View>
 				</Card>
 			</CardsContainer>
 		</ScrollViewContainer>
@@ -162,6 +199,9 @@ const styles = StyleSheet.create({
 	},
 	buttonText: {
 		color: "#FFFFFF",
+	},
+	image: {
+		marginBottom: 5,
 	}
 });
 
