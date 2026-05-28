@@ -110,6 +110,7 @@ function CreateInspection() {
 					))}
 				</View>
 			)}
+			{/* TODO: Hide button until both options chosen */}
 			<TouchableOpacityButton label="Start Inspection" pressHandler={ startInspection } />
 		</ScrollViewContainer>
 	)
