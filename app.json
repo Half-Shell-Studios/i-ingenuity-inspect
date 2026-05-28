@@ -3,7 +3,7 @@
     "name": "i-ingenuity-inspect",
     "slug": "i-ingenuity-inspect",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/images/icon.png",
     "scheme": "iingenuityinspect",
     "userInterfaceStyle": "automatic",
@@ -39,10 +39,10 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#0f172b"
-        //   "dark": {
-        //     "backgroundColor": "#000000"
-        //   }
+          "backgroundColor": "#0f172b",
+          "dark": {
+            "backgroundColor": "#000000"
+          }
         }
       ]
     ],
