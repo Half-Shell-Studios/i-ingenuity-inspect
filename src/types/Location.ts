@@ -6,4 +6,20 @@ export interface Location {
 	areaName?: string
 }
 
+export interface Customer {
+	customerName: string;
+}
+
+export interface Site {
+	siteName: string;
+}
+
+export interface Plant {
+	plantName: string;
+}
+
+export interface Area {
+	areaName: string;
+}
+
 export default Location;
