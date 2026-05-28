@@ -20,5 +20,5 @@ export async function closeFault( db: AppDatabase | null, faultId: string, userI
 		closedComment: comment,
 	}).where(
 		eq( faultsTable.id, faultId )
-	).run();
+	).returning();
 }
