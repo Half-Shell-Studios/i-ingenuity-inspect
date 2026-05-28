@@ -7,8 +7,8 @@ import ScreenTitle from "@/src/components/ScreenTitle";
 import ScrollViewContainer from "@/src/components/ScrollViewContainer";
 import { useWorkOrderDb } from "@/src/context/WorkOrderDbContext";
 import * as locationsQuery from "@/src/db/queries/locations";
-import type { Location } from "@/src/types";
-import { useLocalSearchParams } from "expo-router";
+import type { Location, Customer, GroupedLocations } from "@/src/types";
+import { Stack, useLocalSearchParams } from "expo-router";
 import { Fragment, useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
@@ -44,10 +44,14 @@ export default function WorkOrder() {
 				"area": location.areaName,
 			}))
 
-			const _groupedLocations = {};
+			if( _parsedLocations === undefined ) return;
+
+			const _groupedLocations: Location[] = [];
 
 			for( const item of _parsedLocations ) {
 				const { id, customer, site, plant, area } = item;
+
+				if( customer === undefined ) continue;
 
 				if( !_groupedLocations[customer] ) {
 					_groupedLocations[customer] = { id, customer, sites: {} };
@@ -63,7 +67,7 @@ export default function WorkOrder() {
 			}
 
 			// Convert the intermediate lookup objects into arrays
-			const _result = Object.values( _groupedLocations ).map( customer => ({
+			const _result = Object.values( _groupedLocations ).map( ( customer: Customer ) => ({
 				id: customer.id,
 				customer: customer.customer,
 				sites: Object.values( customer.sites ).map( site => ({
@@ -95,10 +99,9 @@ export default function WorkOrder() {
 		);
 	}
 
-	return (
+	return (<>
 		<ScrollViewContainer>
 			<ScreenTitle title="Work Order" />
-			{/* <Text>Work Order: { workOrder }</Text> */}
 
 			<View style={{ marginBottom: 10 }}>
 				<LinkButton href={`/asset-tags`} label="Asset Tags" />
@@ -194,7 +197,7 @@ export default function WorkOrder() {
 				))}
 			</View> */}
 		</ScrollViewContainer>
-	);
+	</>);
 }
 
 const styles = StyleSheet.create({
