@@ -1,3 +1,5 @@
+import Card from "@/src/components/Card";
+import CardTitle from "@/src/components/CardTitle";
 import LinkButton from "@/src/components/LinkButton";
 import ScreenTitle from "@/src/components/ScreenTitle";
 import ScrollViewContainer from "@/src/components/ScrollViewContainer";
@@ -8,6 +10,8 @@ import { AssetTag, Inspection } from "@/src/types";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Text } from "react-native";
+import PdfRendererView from 'react-native-pdf-renderer';
+
 
 function ShowInspection() {
 	const { inspection }: { inspection: string } = useLocalSearchParams();
@@ -47,6 +51,11 @@ function ShowInspection() {
 			<Text>{ currentInspection?.assetTagId }</Text>
 			<Text>{ inspectedTag?.name }</Text>
 			<LinkButton href={`/(app)/inspections/${ currentInspection?.id }/edit`} label="Edit Inspection" />
+
+			<Card>
+				<CardTitle title="Report Preview" />
+				<PdfRendererView source={ require( '@/assets/reports/sample-report.pdf' ) } />
+			</Card>
 		</ScrollViewContainer>
 	)
 }
