@@ -54,18 +54,25 @@ function EditInspection() {
 		<ScrollViewContainer>
 			<Text style={ styles.lead }>Edit Inspection</Text>
 			<ScreenTitle title={ currentInspection?.name } />
-			<Text style={ styles.lead }>Inspected By</Text>
-			<Text>{ currentInspection?.inspectedBy }</Text>
+			<View style={{ marginBottom: 20 }}>
+				<Text style={ styles.lead }>Inspected By</Text>
+				<Text>{ currentInspection?.inspectedBy }</Text>
+			</View>
 			<CardsContainer>
 				{ inspectionTemplate?.map( templateSection => (
 					<Card key={ templateSection?.name }>
-						<CardTitle title={ templateSection?.name } />
+						<View style={{ marginBottom: 10 }}>
+							<CardTitle title={ templateSection?.name } />
+						</View>
 
 						{ templateSection.questions.map( question => (
-							<View key={ question.id }>
+							<View key={ question.id } style={{ marginBottom: 20 }}>
 								<Text style={{ marginBottom: 10 }}>{ question.content }</Text>
 								{ question.type === 'preset-buttons' && (
 									<GridRow>
+										<View style={{ flex: 0, width: 'auto', maxWidth: '50%' }}>
+											<TouchableOpacityButton label="Fail" pressHandler={ () => answerHandler( 'Fail' ) } colour="error" />
+										</View>
 										<View style={{ flex: 0, width: 'auto', maxWidth: '50%' }}>
 											<TouchableOpacityButton label="Not Accessible" pressHandler={ () => answerHandler( 'Not Accessible' ) } />
 										</View>
@@ -74,6 +81,9 @@ function EditInspection() {
 										</View>
 										<View style={{ flex: 0, width: 'auto', maxWidth: '50%' }}>
 											<TouchableOpacityButton label="Not Examined" pressHandler={ () => answerHandler( 'Not Examined' ) } />
+										</View>
+										<View style={{ flex: 0, width: 'auto', maxWidth: '50%' }}>
+											<TouchableOpacityButton label="Pass" pressHandler={ () => answerHandler( 'Pass' ) } colour="success" />
 										</View>
 									</GridRow>
 								)}
