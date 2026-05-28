@@ -4,6 +4,7 @@ import TouchableOpacityButton from '@/src/components/TouchableOpacityButton';
 import { useAuth } from '@/src/context/AuthContext';
 import { useWorkOrderDb } from '@/src/context/WorkOrderDbContext';
 import { closeFault } from '@/src/db/queries/faults';
+import type { Fault } from '@/src/types';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput } from 'react-native';
@@ -14,19 +15,30 @@ export default function FaultShow() {
 	const router = useRouter();
 	const { fault, assetTag } = useLocalSearchParams<{ fault: string, assetTag: string }>();
 	const [ faultComment, setFaultComment ] = useState<string>('');
+	const [ faultClosed, setFaultClosed ] = useState<boolean>(false);
+	const [ loading, setLoading ] = useState<boolean>(false);
 
 	const handleCloseFault = async () => {
+		setLoading( true );
+
 		if( dbIsReady && !!user ) {
-			await closeFault( db, fault, user?.id, faultComment );
+			const result: Array<Fault> | undefined = await closeFault( db, fault, user?.id, faultComment );
+
+			if( result ) {
+				console.log( result[0].closedAt );
+				setLoading( false );
+			}
 		}
 	}
 
 	return (
 		<ScrollViewContainer>
 			<ScreenTitle title="Close Fault" />
-			<Text>Fault Closure Comment</Text>
+			<Text style={{ marginBottom: 10 }}>Fault Closure Comment</Text>
 			<TextInput multiline numberOfLines={ 5 } placeholder="Fault closure comment..." value={ faultComment } onChangeText={ setFaultComment } textAlignVertical="top" style={ styles.input } />
-			<TouchableOpacityButton label="Close Fault" pressHandler={ handleCloseFault } />
+			<TouchableOpacityButton label="Close Fault" pressHandler={ handleCloseFault } activity={ loading } />
+
+			{/* TODO: Redirect back to fautls index */}
 		</ScrollViewContainer>
 	)
 }
