@@ -9,6 +9,7 @@ export interface AssetTemplateRevision {
 	ipRating: string | null,
 	protection: string | null,
 	serviceLife: number,
+	certificateNumbers: string | null,
 	customFields: string | null,
 	metadata: string | null,
 	version: string | null,

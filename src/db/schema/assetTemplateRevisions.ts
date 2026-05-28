@@ -14,6 +14,7 @@ export const assetTemplateRevisionsTable = sqliteTable( 'asset_template_revision
 	ipRating: text("ip_rating", { length: 512 }),
 	protection: text("protection", { length: 512 }),
 	serviceLife: integer("service_life").notNull(),
+	certificateNumbers: text("certificate_numbers"), // JSON as text in SQLite
 	customFields: text("custom_fields"), // JSON as text in SQLite
 	metadata: text("metadata"), // JSON as text in SQLite
 	version: text("version", { length: 9 }).default("0.01"),
