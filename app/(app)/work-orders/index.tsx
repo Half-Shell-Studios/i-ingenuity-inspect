@@ -4,14 +4,16 @@ import CardsContainer from "@/src/components/CardsContainer";
 import CardTitle from "@/src/components/CardTitle";
 import ScreenTitle from "@/src/components/ScreenTitle";
 import ScrollViewContainer from "@/src/components/ScrollViewContainer";
+import { useAuth } from "@/src/context/AuthContext";
 import { useWorkOrderDb } from "@/src/context/WorkOrderDbContext";
 import type { WorkOrder } from "@/src/types";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 function WorkOrdersIndex() {
 	const router = useRouter();
+	const { user } = useAuth();
 	const { openWorkOrder } = useWorkOrderDb();
 	const [workOrders, setWorkOrders] = useState<WorkOrder[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -64,12 +66,14 @@ function WorkOrdersIndex() {
 
 	return (
 		<ScrollViewContainer refreshCallback={ refreshCallback }>
-			<ScreenTitle title="Work Orders" />
+			<ScreenTitle title={ `Hello, ${ user?.name }!` } />
+			<Text style={ styles.intro }>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aliquid dolor rerum numquam ullam consequuntur odit tenetur dolorum, voluptate impedit!</Text>
+			<Text style={ styles.greeting }>Your Active Work Orders</Text>
 			<CardsContainer>
 				{workOrders.map( workOrder  => (
 					<TouchableOpacity key={ workOrder.id } disabled={ downloading !== null } onPress={ () => handlePress( workOrder ) }>
 						<Card>
-							<View>
+							<View style={{ flexDirection: "row", justifyContent: "space-between"}}>
 								<CardTitle title={ workOrder.name } />
 								{ downloading === workOrder.id && (
 									<ActivityIndicator size="small" color="#4f46e5" />
@@ -82,5 +86,17 @@ function WorkOrdersIndex() {
 		</ScrollViewContainer>
 	);
 }
+
+const styles = StyleSheet.create({
+	greeting: {
+		fontSize: 20,
+		fontWeight: "bold",
+		marginBottom: 20,
+	},
+	intro: {
+		fontSize: 14,
+		marginBottom: 30,
+	},
+});
 
 export default WorkOrdersIndex;
