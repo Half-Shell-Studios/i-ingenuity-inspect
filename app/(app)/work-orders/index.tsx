@@ -22,11 +22,13 @@ function WorkOrdersIndex() {
 	}, []);
 
 	async function loadWorkOrders() {
+		setLoading( true );
+
 		try {
 			const { data } = await workOrdersApi.getAll();
 			setWorkOrders( data );
 		} catch( error ) {
-			console.error( "Failed to load work orders:", error );
+			console.error("Failed to load work orders:", error);
 		} finally {
 			setLoading( false );
 		}
@@ -48,6 +50,10 @@ function WorkOrdersIndex() {
 		}
 	}
 
+	async function refreshCallback() {
+		await loadWorkOrders();
+	}
+
 	if( loading ) {
 		return (
 			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -57,16 +63,18 @@ function WorkOrdersIndex() {
 	}
 
 	return (
-		<ScrollViewContainer>
+		<ScrollViewContainer refreshCallback={ refreshCallback }>
 			<ScreenTitle title="Work Orders" />
 			<CardsContainer>
 				{workOrders.map( workOrder  => (
 					<TouchableOpacity key={ workOrder.id } disabled={ downloading !== null } onPress={ () => handlePress( workOrder ) }>
 						<Card>
-							<CardTitle title={ workOrder.name } />
-							{ downloading === workOrder.id && (
-								<ActivityIndicator size="small" color="#4f46e5" />
-							)}
+							<View>
+								<CardTitle title={ workOrder.name } />
+								{ downloading === workOrder.id && (
+									<ActivityIndicator size="small" color="#4f46e5" />
+								)}
+							</View>
 						</Card>
 					</TouchableOpacity>
 				))}
