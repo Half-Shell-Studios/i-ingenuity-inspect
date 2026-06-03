@@ -21,3 +21,7 @@ export const setActiveWorkOrderUuid = (uuid: string) => SecureStore.setItemAsync
 export const getActiveWorkOrderUuid = () => SecureStore.getItemAsync( ACTIVE_WORK_ORDER_KEY );
 
 export const removeActiveWorkOrderUuid = () => SecureStore.deleteItemAsync( ACTIVE_WORK_ORDER_KEY );
+
+export const clearSecureStore = () => Promise.all([
+	removeToken(), removeLastRoute(), removeActiveWorkOrderUuid()
+]);
