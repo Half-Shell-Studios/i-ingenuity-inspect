@@ -18,8 +18,10 @@ function ScrollViewContainer({ children, refreshCallback }: { children: ReactNod
 	};
 	
 	return (
-		<ScrollView contentContainerStyle={ styles.container } refreshControl={ <RefreshControl tintColor="#8e51ff" refreshing={ refreshing } onRefresh={ handleRefresh } /> }>
-			<View>{ children }</View>
+		<ScrollView alwaysBounceVertical={ true } refreshControl={ <RefreshControl tintColor="#8e51ff" refreshing={ refreshing } onRefresh={ handleRefresh } /> }>
+			<View style={ styles.container }>
+				{ children }	
+			</View>
 		</ScrollView>
 	)
 }
