@@ -1,56 +1,50 @@
 import { WorkOrderDbProvider } from "@/src/context/WorkOrderDbContext";
-import { Slot, useRouter, useSegments } from "expo-router";
+import { Slot, useRouter, useSegments, type Href } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { AuthProvider, useAuth } from "../src/context/AuthContext";
-import { getLastRoute } from "../src/utils/storage";
+import { clearSecureStore, getLastRoute } from "../src/utils/storage";
 
-const VALID_APP_ROUTES = [ "dashboard" ] as const;
-type AppRoute = (typeof VALID_APP_ROUTES)[number];
-
-function isValidAppRoute( route: string | null ): route is AppRoute {
-	return VALID_APP_ROUTES.includes( route as AppRoute );
-}
+const DEFAULT_ROUTE: Href = '/(app)/work-orders';
 
 function AuthGate() {
 	const { isLoading, isAuthenticated } = useAuth();
 	const segments = useSegments();
 	const router = useRouter();
-	const [ hasRedirected, setHasRedirected ] = useState(false);
+	const [ hasRedirected, setHasRedirected ] = useState( false );
 
 	useEffect(() => {
 		if( isLoading ) return;
 
-		const inAuthGroup = segments[0] === "(auth)";
+		const inAuthGroup = segments[0] === '(auth)';
+
+		if( !isAuthenticated ) {
+			clearSecureStore();
+		}
 
 		if( !isAuthenticated && !inAuthGroup ) {
-			router.replace( "/(auth)/login" );
+			router.replace( '/(auth)/login' );
 			setHasRedirected( true );
 			return;
 		}
 
-	if( isAuthenticated && inAuthGroup ) {
-		// Authenticated user landing — restore last route or dashboard
-		(async () => {
-			const lastRoute = await getLastRoute();
-			const target = isValidAppRoute( lastRoute ) ? lastRoute : "dashboard";
-			router.replace( `/(app)/${target}` );
-			setHasRedirected( true );
-		})();
+		if( isAuthenticated && inAuthGroup ) {
+			(async () => {
+				const lastRoute = await getLastRoute();
+				router.replace( lastRoute ?? DEFAULT_ROUTE );
+				setHasRedirected( true );
+			})();
+			return;
+		}
 
-		return;
-	}
-
-	// First load when authenticated and already in app group
-	if( isAuthenticated && !hasRedirected && segments[0] !== "(app)" ) {
-		(async () => {
-			const lastRoute = await getLastRoute();
-			const target = isValidAppRoute( lastRoute ) ? lastRoute : "dashboard";
-			router.replace( `/(app)/${target}` );
-			setHasRedirected( true );
-		})();
-	}
-	}, [ isLoading, isAuthenticated, segments ] );
+		if( isAuthenticated && !hasRedirected && segments[0] !== '(app)' ) {
+			(async () => {
+				const lastRoute = await getLastRoute();
+				router.replace( lastRoute ?? DEFAULT_ROUTE );
+				setHasRedirected( true );
+			})();
+		}
+	}, [ isLoading, isAuthenticated, segments ]);
 
 	if( isLoading ) {
 		return (
