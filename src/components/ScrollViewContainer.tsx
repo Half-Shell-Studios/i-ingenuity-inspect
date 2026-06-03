@@ -1,12 +1,25 @@
-import { ReactNode } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ReactNode, useState } from 'react';
+import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 
-function ScrollViewContainer({ children }: { children: ReactNode }) {
+function ScrollViewContainer({ children, refreshCallback }: { children: ReactNode; refreshCallback?: () => Promise<void>; }) {
+	const [ refreshing, setRefreshing ] = useState<boolean>( false );
+
+	const handleRefresh = async () => {
+		if( !refreshCallback ) return;
+		setRefreshing( true );
+
+		try {
+			await refreshCallback();
+		} catch( error ) {
+			console.error( error );
+		} finally {
+			setRefreshing( false );
+		}
+	};
+	
 	return (
-		<ScrollView>
-			<View style={ styles.container }>
-				{ children }
-			</View>
+		<ScrollView contentContainerStyle={ styles.container } refreshControl={ <RefreshControl tintColor="#8e51ff" refreshing={ refreshing } onRefresh={ handleRefresh } /> }>
+			<View>{ children }</View>
 		</ScrollView>
 	)
 }
