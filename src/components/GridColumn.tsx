@@ -11,7 +11,9 @@ export default function GridColumn({ children, styles }: { children: React.React
 
 const defaultStyles = StyleSheet.create({
 	columnContainer: {
-		flex: 1,
-		paddingInline: 10
+		flexBasis: 'auto',
+		flexGrow: 1,
+		flexShrink: 1,
+		paddingInline: 10,
 	}
 })
