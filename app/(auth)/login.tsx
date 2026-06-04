@@ -1,7 +1,7 @@
+import * as Device from 'expo-device';
 import { Link } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { getDeviceNameSync } from 'react-native-device-info';
 import { useAuth } from "../../src/context/AuthContext";
 
 export default function LoginScreen() {
@@ -9,7 +9,7 @@ export default function LoginScreen() {
 	const [ email, setEmail ] = useState<string>( '' );
 	const [ password, setPassword ] = useState<string>( '' );
 	const [ loading, setLoading ] = useState<boolean>( false );
-	const [ deviceName ] = useState( getDeviceNameSync() )
+	const [ deviceName ] = useState( Device.deviceName ?? '' );
 
 	useEffect(() => {
 		setEmail( process?.env?.EXPO_PUBLIC_DEV_USER ?? '' );
