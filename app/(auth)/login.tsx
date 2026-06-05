@@ -1,8 +1,11 @@
+import { BRAND_COLOUR_NAVY, BRAND_COLOUR_OFFWHITE, BRAND_COLOUR_WHITE, darkModeActive } from '@/src/constants/colours';
 import * as Device from 'expo-device';
 import { Link } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useAuth } from "../../src/context/AuthContext";
+import DefaultLockup from "@/assets/images/logos/default-lockup.svg";
+import AlternativeLockup from "@/assets/images/logos/alternative-lockup.svg";
 
 export default function LoginScreen() {
 	const { login } = useAuth();
@@ -40,7 +43,13 @@ export default function LoginScreen() {
 	return (	
 		<KeyboardAvoidingView style={ styles.container } behavior={ Platform.OS === "ios" ? "padding" : "height" }>
 			<View style={ styles.formWrapper }>
-				<Text style={{ textAlign: "center", fontSize: 36, fontWeight: 800, color: "#8e51ff", marginBottom: 20 }}>I-Ingenuity</Text>
+				<View style={{ alignItems: "center", marginBottom: 30 }}>
+					{ darkModeActive ? (
+						<AlternativeLockup width={ 400 } height={ 50 } />
+					) : (
+						<DefaultLockup width={ 400 } height={ 50 } />
+					)}
+				</View>
 				<View style={ styles.form }>
 					<TextInput style={ styles.input } placeholder="Email" placeholderTextColor="#9ca3af" value={ email } onChangeText={ setEmail } autoCapitalize="none" keyboardType="email-address" returnKeyType="next" />
 					<TextInput style={ styles.input } placeholder="Password" placeholderTextColor="#9ca3af" value={ password } onChangeText={ setPassword } secureTextEntry returnKeyType="go" onSubmitEditing={ handleLogin } />
@@ -68,11 +77,12 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 		padding: 16,
-		backgroundColor: "#0f172b"
+		backgroundColor: darkModeActive ? BRAND_COLOUR_NAVY : BRAND_COLOUR_OFFWHITE,
 	},
 	formWrapper: {
 		width: '100%',
 		maxWidth: 480,
+		backgroundColor: darkModeActive ? BRAND_COLOUR_NAVY : BRAND_COLOUR_WHITE,
 	},
 	form: {},
 	input: {
