@@ -1,11 +1,10 @@
 import { WorkOrderDbProvider } from "@/src/context/WorkOrderDbContext";
-import { Slot, useRouter, useSegments, type Href } from "expo-router";
+import { Slot, useRouter, useSegments } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { AuthProvider, useAuth } from "../src/context/AuthContext";
 import { clearSecureStore, getLastRoute } from "../src/utils/storage";
-
-const DEFAULT_ROUTE: Href = '/(app)/work-orders';
+import { AUTH_ROUTE, DEFAULT_ROUTE } from "@/src/constants/routes";
 
 function AuthGate() {
 	const { isLoading, isAuthenticated } = useAuth();
@@ -23,7 +22,7 @@ function AuthGate() {
 		}
 
 		if( !isAuthenticated && !inAuthGroup ) {
-			router.replace( '/(auth)/login' );
+			router.replace( AUTH_ROUTE );
 			setHasRedirected( true );
 			return;
 		}
