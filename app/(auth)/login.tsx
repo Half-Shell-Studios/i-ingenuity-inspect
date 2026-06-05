@@ -1,11 +1,11 @@
-import { BRAND_COLOUR_NAVY, BRAND_COLOUR_OFFWHITE, BRAND_COLOUR_WHITE, darkModeActive } from '@/src/constants/colours';
+import AlternativeLockup from "@/assets/images/logos/alternative-lockup.svg";
+import DefaultLockup from "@/assets/images/logos/default-lockup.svg";
+import { ACCENT_COLOUR, BRAND_COLOUR_NAVY, BRAND_COLOUR_OFFWHITE, BRAND_COLOUR_WHITE, darkModeActive } from '@/src/constants/colours';
 import * as Device from 'expo-device';
 import { Link } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useAuth } from "../../src/context/AuthContext";
-import DefaultLockup from "@/assets/images/logos/default-lockup.svg";
-import AlternativeLockup from "@/assets/images/logos/alternative-lockup.svg";
 
 export default function LoginScreen() {
 	const { login } = useAuth();
@@ -51,8 +51,8 @@ export default function LoginScreen() {
 					)}
 				</View>
 				<View style={ styles.form }>
-					<TextInput style={ styles.input } placeholder="Email" placeholderTextColor="#9ca3af" value={ email } onChangeText={ setEmail } autoCapitalize="none" keyboardType="email-address" returnKeyType="next" />
-					<TextInput style={ styles.input } placeholder="Password" placeholderTextColor="#9ca3af" value={ password } onChangeText={ setPassword } secureTextEntry returnKeyType="go" onSubmitEditing={ handleLogin } />
+					<TextInput style={ styles.input } placeholder="Email" placeholderTextColor={ BRAND_COLOUR_NAVY } value={ email } onChangeText={ setEmail } autoCapitalize="none" keyboardType="email-address" returnKeyType="next" />
+					<TextInput style={ styles.input } placeholder="Password" placeholderTextColor={ BRAND_COLOUR_NAVY } value={ password } onChangeText={ setPassword } secureTextEntry returnKeyType="go" onSubmitEditing={ handleLogin } />
 					<Link href="/(auth)/forgot-password" style={{ ...styles.link, textAlign: "right", marginBottom: 10 }}>Forgot your password?</Link>
 					<TouchableOpacity style={[ styles.button, loading && styles.buttonDisabled ]} onPress={ handleLogin } disabled={ loading }>
 						{loading ? (
@@ -82,22 +82,23 @@ const styles = StyleSheet.create({
 	formWrapper: {
 		width: '100%',
 		maxWidth: 480,
-		backgroundColor: darkModeActive ? BRAND_COLOUR_NAVY : BRAND_COLOUR_WHITE,
+		// backgroundColor: darkModeActive ? BRAND_COLOUR_NAVY : BRAND_COLOUR_WHITE,
 	},
 	form: {},
 	input: {
-		color: "#ffffff",
+		color: darkModeActive ? BRAND_COLOUR_WHITE : ACCENT_COLOUR,
 		fontSize: 16,
 		padding: 14,
+		backgroundColor: darkModeActive ? BRAND_COLOUR_NAVY : BRAND_COLOUR_WHITE,
 		borderWidth: 1,
-		borderColor: "#8e51ff",
+		borderColor: ACCENT_COLOUR,
 		borderRadius: 10,
 		marginBottom: 16,
 	},
 	button: {
 		alignItems: "center",
 		padding: 16,
-		backgroundColor: "#8e51ff",
+		backgroundColor: ACCENT_COLOUR,
 		borderRadius: 10,
 		marginBottom: 16,
 	},
@@ -105,7 +106,7 @@ const styles = StyleSheet.create({
 		opacity: 0.7
 	},
 	buttonText: {
-		color: "#ffffff",
+		color: BRAND_COLOUR_WHITE,
 		fontSize: 16,
 		fontWeight: "600"
 	},
