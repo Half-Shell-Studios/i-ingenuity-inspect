@@ -30,8 +30,14 @@ export const assetTagsRelations = defineRelations(
 				references: [ locationsTable.id ],
 			}
 		),
-		faults: many(faultsTable),
-		faultsOpen: many(faultsTable),
-		faultsClosed: many(faultsTable),
+		faults: many(faultsTable, {
+			relationName: "assetTagAllFaults"
+		}),
+		faultsOpen: many(faultsTable, {
+			relationName: "assetTagOpenFaults"
+		}),
+		faultsClosed: many(faultsTable, {
+			relationName: "assetTagClosedFaults"
+		}),
 	})
 );
