@@ -1,15 +1,15 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { ACCENT_COLOUR, BRAND_COLOUR_GREY } from '../constants/colours';
 
 export default function Choice({ label, value, selected }: { label: string, value: string, selected: boolean }) {
 	return (
 		<View style={ styles.container }>
 			<Text>{ label }</Text>
 			{ selected ? (
-				<Ionicons name="checkmark-circle" size={24} color="#7863FB" />
+				<Ionicons name="checkmark-circle" size={ 24 } color={ ACCENT_COLOUR } />
 			) : (
-				<Ionicons name="checkmark-circle-outline" size={24} color="#C0C0C0" />
+				<Ionicons name="checkmark-circle-outline" size={ 24 } color={ BRAND_COLOUR_GREY } />
 			)}
 		</View>
 	)
