@@ -7,18 +7,22 @@ export interface Location {
 }
 
 export interface Customer {
+	id?: string;
 	customerName: string;
 }
 
 export interface Site {
+	id?: string;
 	siteName: string;
 }
 
 export interface Plant {
+	id?: string;
 	plantName: string;
 }
 
 export interface Area {
+	id?: string;
 	areaName: string;
 }
 
