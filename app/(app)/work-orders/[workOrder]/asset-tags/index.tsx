@@ -21,13 +21,7 @@ import { useRouter } from "expo-router";
 import { Fragment, useEffect, useState } from "react";
 import { ActivityIndicator, Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
-
-const FLAVOURS = [
-	{ label: 'Vanilla', value: 'vanilla' },
-	{ label: 'Chocolate', value: 'chocolate' },
-	{ label: 'Strawberry', value: 'strawberry' },
-];
+const { width: screenWidth } = Dimensions.get( 'window' );
 
 export default function AssetTagsIndex() {
 	const router = useRouter();
@@ -64,13 +58,15 @@ export default function AssetTagsIndex() {
 			<View style={ styles.filtersContainer }>
 				<CardsContainer>
 					<Card>
-						<CardTitle title="Filters" />
+						<View style={{ marginBottom: 10 }}>
+							<CardTitle title="Filters" />
+						</View>
 						<View style={{ marginInline: -5 }}>
 							<GridRow>
 								<GridColumn style={ styles.filtersColumn }>
 									<GridRow>
 										<GridColumn style={ styles.iconContainer }>
-											<CustomersIcon width={ 20 } height={ 20 } color={ ACCENT_COLOUR } />
+											<CustomersIcon width={ 26 } height={ 26 } color={ ACCENT_COLOUR } strokeWidth={ 6 } />
 										</GridColumn>
 										{ !!customers?.length && (
 											<GridColumn style={{ flexGrow: 1 }}>
@@ -82,7 +78,7 @@ export default function AssetTagsIndex() {
 								<GridColumn style={ styles.filtersColumn }>
 									<GridRow>
 										<GridColumn style={ styles.iconContainer }>
-											<SitesIcon width={ 20 } height={ 20 } color={ ACCENT_COLOUR } />
+											<SitesIcon width={ 26 } height={ 26 } color={ ACCENT_COLOUR } strokeWidth={ 6 } />
 										</GridColumn>
 									{ !!sites?.length && (
 										<GridColumn style={{ flexGrow: 1 }}>
@@ -94,7 +90,7 @@ export default function AssetTagsIndex() {
 								<GridColumn style={ styles.filtersColumn }>
 									<GridRow>
 										<GridColumn style={ styles.iconContainer }>
-											<PlantsIcon width={ 20 } height={ 20 } color={ ACCENT_COLOUR } />
+											<PlantsIcon width={ 26 } height={ 26 } color={ ACCENT_COLOUR } strokeWidth={ 6 } />
 										</GridColumn>
 										{ !!plants?.length && (
 											<GridColumn style={{ flexGrow: 1 }}>
@@ -106,7 +102,7 @@ export default function AssetTagsIndex() {
 								<GridColumn style={ styles.filtersColumn }>
 									<GridRow>
 										<GridColumn style={ styles.iconContainer }>
-											<AreasIcon width={ 20 } height={ 20 } color={ ACCENT_COLOUR } />
+											<AreasIcon width={ 26 } height={ 26 } color={ ACCENT_COLOUR } strokeWidth={ 6 } />
 										</GridColumn>
 										{ !!areas?.length && (
 											<GridColumn style={{ flexGrow: 1 }}>
@@ -127,7 +123,6 @@ export default function AssetTagsIndex() {
 				{ tags.map(( tag ) => (
 					<TouchableOpacity key={ tag.id } onPress={ () => router.push( `./asset-tags/${ tag.id }` ) }>
 						<Card>
-							{/* <Text>Tag</Text> */}
 							<View style={{ marginBottom: 30 }}>
 								<GridRow>
 									<GridColumn>
@@ -191,7 +186,7 @@ const styles = StyleSheet.create({
 		paddingInline: 5,
 	},
 	iconContainer: {
-		padding: 10,
+		padding: 6,
 		borderWidth: 1,
 		borderRadius: "100%",
 		borderColor: ACCENT_COLOUR,
