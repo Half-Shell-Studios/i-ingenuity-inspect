@@ -1,14 +1,61 @@
 import { faultsTable } from "@/src/db/schema";
-import { eq, isNull } from "drizzle-orm";
+import { eq, isNotNull, isNull } from "drizzle-orm";
 import { AppDatabase } from "..";
-// import { getActiveDb } from "../index";
+
+export async function getFaults( db: AppDatabase | null ) {
+	if( !db ) return [];
+
+	return await db.query.faultsTable.findMany({
+		with: {
+			assetTag: {
+				with: {
+					assetTemplate: {
+						with: {
+							revisionActive: true
+						}
+					}
+				}
+			}
+		}
+	});
+}
 
 export async function getOpenFaults( db: AppDatabase | null ) {
-	if( !db ) return;
+	if( !db ) return [];
 
-	return db.select().from( faultsTable ).where(
-		isNull( faultsTable.closedAt )
-	).all();
+	return await db.query.faultsTable.findMany({
+		with: {
+			assetTag: {
+				with: {
+					assetTemplate: {
+						with: {
+							revisionActive: true
+						}
+					}
+				}
+			}
+		},
+		where: isNull( faultsTable.closedAt )
+	});
+}
+
+export async function getClosedFaults( db: AppDatabase | null ) {
+	if( !db ) return [];
+
+	return await db.query.faultsTable.findMany({
+		with: {
+			assetTag: {
+				with: {
+					assetTemplate: {
+						with: {
+							revisionActive: true
+						}
+					}
+				}
+			}
+		},
+		where: isNotNull( faultsTable.closedAt )
+	});
 }
 
 export async function closeFault( db: AppDatabase | null, faultId: string, userId: string, comment: string ) {
