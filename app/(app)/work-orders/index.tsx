@@ -4,6 +4,7 @@ import CardsContainer from "@/src/components/CardsContainer";
 import CardTitle from "@/src/components/CardTitle";
 import ScreenTitle from "@/src/components/ScreenTitle";
 import ScrollViewContainer from "@/src/components/ScrollViewContainer";
+import { ACCENT_COLOUR } from "@/src/constants/colours";
 import { useAuth } from "@/src/context/AuthContext";
 import { useWorkOrderDb } from "@/src/context/WorkOrderDbContext";
 import type { WorkOrder } from "@/src/types";
@@ -15,9 +16,9 @@ function WorkOrdersIndex() {
 	const router = useRouter();
 	const { user } = useAuth();
 	const { openWorkOrder } = useWorkOrderDb();
-	const [workOrders, setWorkOrders] = useState<WorkOrder[]>([]);
-	const [loading, setLoading] = useState(true);
-	const [downloading, setDownloading] = useState<string | null>(null);
+	const [ workOrders, setWorkOrders ] = useState<WorkOrder[]>([]);
+	const [ loading, setLoading ] = useState(true);
+	const [ downloading, setDownloading ] = useState<string | null>(null);
 
 	useEffect(() => {
 		loadWorkOrders();
@@ -59,7 +60,7 @@ function WorkOrdersIndex() {
 	if( loading ) {
 		return (
 			<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-				<ActivityIndicator size="large" color="#4f46e5" />
+				<ActivityIndicator size="large" color={ ACCENT_COLOUR } />
 			</View>
 		);
 	}
@@ -76,7 +77,7 @@ function WorkOrdersIndex() {
 							<View style={{ flexDirection: "row", justifyContent: "space-between"}}>
 								<CardTitle title={ workOrder.name } />
 								{ downloading === workOrder.id && (
-									<ActivityIndicator size="small" color="#4f46e5" />
+									<ActivityIndicator size="small" color={ ACCENT_COLOUR } />
 								)}
 							</View>
 						</Card>
