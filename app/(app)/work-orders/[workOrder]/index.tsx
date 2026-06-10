@@ -1,12 +1,15 @@
+import CustomersIcon from '@/assets/icons/customers.svg';
+import LocationsIcon from '@/assets/icons/locations.svg';
 import Card from "@/src/components/Card";
 import CardsContainer from "@/src/components/CardsContainer";
 import CardTitle from "@/src/components/CardTitle";
 import GridRow from "@/src/components/GridRow";
 import ScreenTitle from "@/src/components/ScreenTitle";
 import ScrollViewContainer from "@/src/components/ScrollViewContainer";
+import { ACCENT_COLOUR } from '@/src/constants/colours';
 import { useWorkOrderDb } from "@/src/context/WorkOrderDbContext";
 import * as locationsQuery from "@/src/db/queries/locations";
-import type { Customer, Location } from "@/src/types";
+import type { Location } from "@/src/types";
 import { useLocalSearchParams } from "expo-router";
 import { Fragment, useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
@@ -103,19 +106,26 @@ export default function WorkOrder() {
 			<ScreenTitle title="Work Order" />
 
 			<View style={{ marginBottom: 20 }}>
-				{/* <View style={{ flexDirection: "row", columnGap: 5, alignItems: "center" }}>
-					<View style={{ padding: 5, borderWidth: 1, borderColor: '#7863FB', borderRadius: "100%" }}>
-						<LocationsIcon width={ 20 } height={ 20 } strokeWidth={ 10 } color="#7863FB" />
+				<View style={{ flexDirection: "row", columnGap: 5, alignItems: "center" }}>
+					<View style={{ padding: 5, borderWidth: 1, borderColor: ACCENT_COLOUR, borderRadius: "100%" }}>
+						<LocationsIcon width={ 30 } height={ 30 } color={ ACCENT_COLOUR } />
 					</View>
 					<Text style={ styles.lead }>Locations</Text>
-				</View> */}
+				</View>
 				<Text style={ styles.lead }>Locations</Text>
 				<CardsContainer>
 					{parsedLocations?.length > 0 && parsedLocations?.map( customer => (
 						<Card key={ customer.id }>
 							<View style={{ marginBottom: 10 }}>
 								<Text style={ styles.lead }>Customer</Text>
-								<CardTitle title={ customer.customer } />
+								<View style={{ flexDirection: "row", alignItems: "center" }}>
+									<View style={{ flexShrink: 1, flexGrow: 0, flexBasis: "auto", marginEnd: 10 }}>
+										<View style={{ padding: 5, borderWidth: 1, borderColor: ACCENT_COLOUR, borderRadius: "100%" }}>
+											<CustomersIcon width={ 30 } height={ 30 } color={ ACCENT_COLOUR } />
+										</View>
+									</View>
+									<CardTitle title={ customer.customer } />
+								</View>
 							</View>
 							<Text style={ styles.lead }>Sites</Text>
 							<GridRow>
@@ -212,7 +222,7 @@ const styles = StyleSheet.create({
 	button: {
 		paddingBlock: 8,
 		paddingInline: 16,
-		backgroundColor: "#7863FB",
+		backgroundColor: ACCENT_COLOUR,
 		borderRadius: 4,
 	},
 	buttonText: {
