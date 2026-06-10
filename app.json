@@ -12,7 +12,8 @@
       "bundleIdentifier": "com.iingenuity.iingenuityinspect",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "appleTeamId": "GQHFR8SLY2"
     },
     "android": {
       "adaptiveIcon": {
