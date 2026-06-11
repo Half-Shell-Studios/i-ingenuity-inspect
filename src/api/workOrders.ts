@@ -1,4 +1,4 @@
-import type { UpdateWorkOrderPayload, WorkOrder } from "@/src/types/WorkOrder";
+import type { WorkOrder } from "@/src/types/WorkOrder";
 import { getActiveWorkOrderUuid, setActiveWorkOrderUuid } from "@/src/utils/storage";
 import { Directory, File, Paths } from "expo-file-system/next";
 import client from "./client";
@@ -8,11 +8,11 @@ const sqliteDir = new Directory( Paths.document, "SQLite" );
 export const workOrdersApi = {
 	getAll: () => client.get<WorkOrder[]>( '/work-orders' ),
 
-	getById: ( id: string ) => client.get<WorkOrder>( `/work-orders/${ id }` ),
+	getById: ( id: string ) => client.get<WorkOrder>( `/work-orders/${ id }/download` ),
 
 	// create: ( payload: CreateWorkOrderPayload ) => client.post<WorkOrder>( '/work-orders', payload ),
 
-	update: ( id: string, payload: UpdateWorkOrderPayload ) => client.patch<WorkOrder>( `/work-orders/${id}`, payload ),
+	// update: ( id: string, payload: UpdateWorkOrderPayload ) => client.patch<WorkOrder>( `/work-orders/${id}`, payload ),
 
 	// delete: ( id: string ) => client.delete( `/work-orders/${ id }` ),
 };
