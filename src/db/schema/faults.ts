@@ -33,7 +33,6 @@ export const faultsRelations = relations(
 			assetTagsTable, {
 				fields: [ faultsTable.assetTagId ],
 				references: [ assetTagsTable.id ],
-				relationName: "assetTagAllFaults"
 			}
 		),
 		inspection: one(
