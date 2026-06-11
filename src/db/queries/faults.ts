@@ -20,25 +20,25 @@ function queryFaults( db: AppDatabase, where?: SQL ) {
 }
 
 export async function getFaults( db: AppDatabase | null ) {
-	if( !db ) return [];
+	if( !db ) throw new Error( 'Database not initialized' );
 
 	return queryFaults(db);
 }
 
 export async function getOpenFaults( db: AppDatabase | null ) {
-	if( !db ) return [];
+	if( !db ) throw new Error( 'Database not initialized' );
 
 	return queryFaults(db, isNull( faultsTable.closedAt ) );
 }
 
 export async function getClosedFaults( db: AppDatabase | null ) {
-	if( !db ) return [];
+	if( !db ) throw new Error( 'Database not initialized' );
 
 	return queryFaults(db, isNotNull( faultsTable.closedAt ) );
 }
 
 export async function closeFault( db: AppDatabase | null, faultId: string, userId: string, comment: string ) {
-	if( !db ) return;
+	if( !db ) throw new Error( 'Database not initialized' );
 
 	return db.update( faultsTable ).set({
 		closedAt: new Date().toISOString(),
