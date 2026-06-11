@@ -4,7 +4,7 @@ import { ACCENT_COLOUR, BRAND_COLOUR_NAVY, BRAND_COLOUR_OFFWHITE, BRAND_COLOUR_W
 import * as Device from 'expo-device';
 import { Link } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, useWindowDimensions, View } from "react-native";
+import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { useAuth } from "../../src/context/AuthContext";
 
 export default function LoginScreen() {
@@ -13,7 +13,6 @@ export default function LoginScreen() {
 	const [ password, setPassword ] = useState<string>( '' );
 	const [ loading, setLoading ] = useState<boolean>( false );
 	const [ deviceName ] = useState( Device.deviceName ?? '' );
-	const { width: screenWidth } = useWindowDimensions();
 
 	useEffect(() => {
 		setEmail( process?.env?.EXPO_PUBLIC_DEV_USER ?? '' );
