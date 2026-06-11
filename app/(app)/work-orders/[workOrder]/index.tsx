@@ -4,6 +4,7 @@ import Card from "@/src/components/Card";
 import CardsContainer from "@/src/components/CardsContainer";
 import CardTitle from "@/src/components/CardTitle";
 import GridRow from "@/src/components/GridRow";
+import Icon from '@/src/components/Icon';
 import ScreenTitle from "@/src/components/ScreenTitle";
 import ScrollViewContainer from "@/src/components/ScrollViewContainer";
 import { ACCENT_COLOUR } from '@/src/constants/colours';
@@ -28,7 +29,7 @@ export default function WorkOrder() {
 		if( isReady ) {
 			(async() => {
 				setLocations( await locationsQuery.getAllLocations( db ) );
-				setCustomers( await locationsQuery.getAllCutsomers( db ) );
+				setCustomers( await locationsQuery.getAllCustomers( db ) );
 				setSites( await locationsQuery.getAllSites( db ) );
 				setPlants( await locationsQuery.getAllPlants( db ) );
 				setAreas( await locationsQuery.getAllAreas( db ) );
@@ -108,7 +109,7 @@ export default function WorkOrder() {
 			<View style={{ marginBottom: 20 }}>
 				<View style={{ flexDirection: "row", columnGap: 5, alignItems: "center" }}>
 					<View style={{ padding: 5, borderWidth: 1, borderColor: ACCENT_COLOUR, borderRadius: "100%" }}>
-						<LocationsIcon width={ 30 } height={ 30 } color={ ACCENT_COLOUR } />
+						<Icon icon={ LocationsIcon } color={ ACCENT_COLOUR } />
 					</View>
 					<Text style={ styles.lead }>Locations</Text>
 				</View>
@@ -121,7 +122,7 @@ export default function WorkOrder() {
 								<View style={{ flexDirection: "row", alignItems: "center" }}>
 									<View style={{ flexShrink: 1, flexGrow: 0, flexBasis: "auto", marginEnd: 10 }}>
 										<View style={{ padding: 5, borderWidth: 1, borderColor: ACCENT_COLOUR, borderRadius: "100%" }}>
-											<CustomersIcon width={ 30 } height={ 30 } color={ ACCENT_COLOUR } />
+											<Icon icon={ CustomersIcon } color={ ACCENT_COLOUR } />
 										</View>
 									</View>
 									<CardTitle title={ customer.customer } />
