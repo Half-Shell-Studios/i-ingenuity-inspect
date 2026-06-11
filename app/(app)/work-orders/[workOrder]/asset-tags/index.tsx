@@ -8,6 +8,7 @@ import CardsContainer from "@/src/components/CardsContainer";
 import CardTitle from "@/src/components/CardTitle";
 import GridColumn from "@/src/components/GridColumn";
 import GridRow from "@/src/components/GridRow";
+import Icon from '@/src/components/Icon';
 import LocationFilter from '@/src/components/LocationFilter';
 import ScreenTitle from "@/src/components/ScreenTitle";
 import TouchableOpacityButton from "@/src/components/TouchableOpacityButton";
@@ -36,7 +37,7 @@ export default function AssetTagsIndex() {
 		if( dbIsReady ) {	
 			(async() => {
 				setTags( await getAllAssetTags( db ) );
-				setCustomers( await locationsQuery.getAllCutsomers( db ) );
+				setCustomers( await locationsQuery.getAllCustomers( db ) );
 				setSites( await locationsQuery.getAllSites( db ) );
 				setPlants( await locationsQuery.getAllPlants( db ) );
 				setAreas( await locationsQuery.getAllAreas( db ) );
@@ -66,7 +67,7 @@ export default function AssetTagsIndex() {
 								<GridColumn style={ styles.filtersColumn }>
 									<GridRow>
 										<GridColumn style={ styles.iconContainer }>
-											<CustomersIcon width={ 26 } height={ 26 } color={ ACCENT_COLOUR } strokeWidth={ 6 } />
+											<Icon icon={ CustomersIcon } width={ 26 } height={ 26 } color={ ACCENT_COLOUR } />
 										</GridColumn>
 										{ !!customers?.length && (
 											<GridColumn style={{ flexGrow: 1 }}>
@@ -78,7 +79,7 @@ export default function AssetTagsIndex() {
 								<GridColumn style={ styles.filtersColumn }>
 									<GridRow>
 										<GridColumn style={ styles.iconContainer }>
-											<SitesIcon width={ 26 } height={ 26 } color={ ACCENT_COLOUR } strokeWidth={ 6 } />
+											<Icon icon={ SitesIcon } width={ 26 } height={ 26 } color={ ACCENT_COLOUR } />
 										</GridColumn>
 									{ !!sites?.length && (
 										<GridColumn style={{ flexGrow: 1 }}>
@@ -90,7 +91,7 @@ export default function AssetTagsIndex() {
 								<GridColumn style={ styles.filtersColumn }>
 									<GridRow>
 										<GridColumn style={ styles.iconContainer }>
-											<PlantsIcon width={ 26 } height={ 26 } color={ ACCENT_COLOUR } strokeWidth={ 6 } />
+											<Icon icon={ PlantsIcon } width={ 26 } height={ 26 } color={ ACCENT_COLOUR } />
 										</GridColumn>
 										{ !!plants?.length && (
 											<GridColumn style={{ flexGrow: 1 }}>
@@ -102,7 +103,7 @@ export default function AssetTagsIndex() {
 								<GridColumn style={ styles.filtersColumn }>
 									<GridRow>
 										<GridColumn style={ styles.iconContainer }>
-											<AreasIcon width={ 26 } height={ 26 } color={ ACCENT_COLOUR } strokeWidth={ 6 } />
+											<Icon icon={ AreasIcon } width={ 26 } height={ 26 } color={ ACCENT_COLOUR } />
 										</GridColumn>
 										{ !!areas?.length && (
 											<GridColumn style={{ flexGrow: 1 }}>
@@ -127,12 +128,14 @@ export default function AssetTagsIndex() {
 								<GridRow>
 									<GridColumn>
 										<View style={ styles.iconContainer }>
-											<AssetTagIcon width={ 20 } height={ 20 } />
+											<Icon icon={ AssetTagIcon } />
 										</View>
 									</GridColumn>
-									<Text style={ styles.cardTitle }>
-										{ tag.name }
-									</Text>
+									<GridColumn>
+										<Text style={ styles.cardTitle }>
+											{ tag.name }
+										</Text>
+									</GridColumn>
 								</GridRow>
 							</View>
 							{ tag?.description && (
