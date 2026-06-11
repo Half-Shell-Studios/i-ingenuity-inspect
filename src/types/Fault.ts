@@ -1,3 +1,5 @@
+import AssetTag from "./AssetTag";
+
 export interface Fault {
 	id: string,
 	locationId: string,
@@ -11,6 +13,7 @@ export interface Fault {
 	closedAt: string | null,
 	closedBy: string | null,
 	closedComment: string | null,
+	assetTag?: AssetTag
 }
 
 export interface FaultSection {
