@@ -11,9 +11,10 @@ export async function getFaults( db: AppDatabase | null ) {
 				with: {
 					assetTemplate: {
 						with: {
-							revisionActive: true
+							revisionActive: true,
 						}
-					}
+					},
+					location: true
 				}
 			}
 		}
@@ -29,9 +30,10 @@ export async function getOpenFaults( db: AppDatabase | null ) {
 				with: {
 					assetTemplate: {
 						with: {
-							revisionActive: true
+							revisionActive: true,
 						}
-					}
+					},
+					location: true
 				}
 			}
 		},
@@ -48,9 +50,10 @@ export async function getClosedFaults( db: AppDatabase | null ) {
 				with: {
 					assetTemplate: {
 						with: {
-							revisionActive: true
+							revisionActive: true,
 						}
-					}
+					},
+					location: true
 				}
 			}
 		},
