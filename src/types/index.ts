@@ -3,6 +3,7 @@ export * from "./AssetTemplate";
 export * from "./AssetTemplateRevision";
 // export * from "./attachments";
 export * from "./Fault";
+export * from "./FaultCode";
 // export * from "./faultCodes";
 export * from "./Inspection";
 export * from "./InspectionTemplate";
@@ -12,3 +13,4 @@ export * from "./Location";
 // export * from "./team";
 export * from "./User";
 export * from "./WorkOrder";
+
