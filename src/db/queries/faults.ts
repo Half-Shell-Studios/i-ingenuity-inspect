@@ -37,6 +37,15 @@ export async function getClosedFaults( db: AppDatabase | null ) {
 	return queryFaults(db, isNotNull( faultsTable.closedAt ) );
 }
 
+export async function getFaultById({ db, faultId }: { db: AppDatabase; faultId: string }) {
+	if( !db ) throw new Error( 'Database not initialized' );
+
+	return db.query.faultsTable.findFirst({
+		where: eq( faultsTable.id, faultId ),
+		with: faultsWith
+	});
+}
+
 export async function closeFault( db: AppDatabase | null, faultId: string, userId: string, comment: string ) {
 	if( !db ) throw new Error( 'Database not initialized' );
 
