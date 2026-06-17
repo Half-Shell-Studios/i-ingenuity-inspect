@@ -5,11 +5,12 @@ import GridColumn from '@/src/components/GridColumn';
 import GridRow from '@/src/components/GridRow';
 import ScreenTitle from '@/src/components/ScreenTitle';
 import ScrollViewContainer from '@/src/components/ScrollViewContainer';
+import { ACCENT_COLOUR } from '@/src/constants/colours';
 import { useWorkOrderDb } from '@/src/context/WorkOrderDbContext';
 import { getClosedFaults, getOpenFaults } from '@/src/db/queries/faults';
 import { Fault } from '@/src/types';
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 
 function FaultCard({ fault }: { fault: Fault }) {
 	if( !fault.assetTag ) return <Text>Tag not found</Text>
@@ -83,6 +84,14 @@ export default function FaultsIndex() {
 			setLoading( false );
 		}
 	}
+
+	if( dbError ) return <Text>Error: { dbError }</Text>;
+	
+	if( !dbIsReady || !db || ( dbIsReady && ( ( openFaults?.length < 1 ) || ( closedFaults?.length < 1 ) ) ) ) return (
+		<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+			<ActivityIndicator size="large" color={ ACCENT_COLOUR } />
+		</View>
+	);
 
 	return (<>
 		<ScrollViewContainer refreshCallback={ refreshCallback }>
