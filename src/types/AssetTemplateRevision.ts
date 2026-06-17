@@ -8,7 +8,7 @@ export interface AssetTemplateRevision {
 	description: string | null,
 	ipRating: string | null,
 	protection: string | null,
-	serviceLife: number,
+	serviceLife?: number,
 	certificateNumbers: string | null,
 	customFields: string | null,
 	metadata: string | null,
