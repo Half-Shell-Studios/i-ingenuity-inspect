@@ -4,7 +4,7 @@ import { eq, isNotNull, isNull } from "drizzle-orm";
 import { AppDatabase } from "..";
 
 export async function getAllAssetTags( db: AppDatabase | null ) {
-	if( !db ) throw new Error( 'Database not initialized' );
+	if( !db ) throw new Error( 'Database not initialised' );
 
 	const result = await db.query.assetTagsTable.findMany({
 		with: {
@@ -35,7 +35,7 @@ export async function getAllAssetTags( db: AppDatabase | null ) {
 }
 
 export async function getAssetTagById( db: AppDatabase | null, id: string ) {
-	if( !db ) throw new Error( 'Database not initialized' );
+	if( !db ) throw new Error( 'Database not initialised' );
 
 	const result = await db.query.assetTagsTable.findFirst({
 		where: eq( assetTagsTable.id, id ),

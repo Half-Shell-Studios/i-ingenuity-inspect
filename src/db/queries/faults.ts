@@ -20,25 +20,25 @@ function queryFaults( db: AppDatabase, where?: SQL ) {
 }
 
 export async function getFaults( db: AppDatabase | null ) {
-	if( !db ) throw new Error( 'Database not initialized' );
+	if( !db ) throw new Error( 'Database not initialised' );
 
 	return queryFaults(db);
 }
 
 export async function getOpenFaults( db: AppDatabase | null ) {
-	if( !db ) throw new Error( 'Database not initialized' );
+	if( !db ) throw new Error( 'Database not initialised' );
 
 	return queryFaults(db, isNull( faultsTable.closedAt ) );
 }
 
 export async function getClosedFaults( db: AppDatabase | null ) {
-	if( !db ) throw new Error( 'Database not initialized' );
+	if( !db ) throw new Error( 'Database not initialised' );
 
 	return queryFaults(db, isNotNull( faultsTable.closedAt ) );
 }
 
 export async function getFaultById( db: AppDatabase, faultId: string ) {
-	if( !db ) throw new Error( 'Database not initialized' );
+	if( !db ) throw new Error( 'Database not initialised' );
 
 	return db.query.faultsTable.findFirst({
 		where: eq( faultsTable.id, faultId ),
@@ -47,7 +47,7 @@ export async function getFaultById( db: AppDatabase, faultId: string ) {
 }
 
 export async function closeFault( db: AppDatabase | null, faultId: string, userId: string, comment: string ) {
-	if( !db ) throw new Error( 'Database not initialized' );
+	if( !db ) throw new Error( 'Database not initialised' );
 
 	return db.update( faultsTable ).set({
 		closedAt: new Date().toISOString(),
