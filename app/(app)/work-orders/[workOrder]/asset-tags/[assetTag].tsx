@@ -10,7 +10,7 @@ import AssetTag from "@/src/types/AssetTag";
 import { Image, useImage } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from "react-native";
+import { ActivityIndicator, ScrollView, StyleSheet, Text, useWindowDimensions, View } from "react-native";
 
 function AssetTagShow() {
 	const router = useRouter();
@@ -51,9 +51,7 @@ function AssetTagShow() {
 						)}
 					</View>
 					<View style={{ flex: 0 }}>
-						<TouchableOpacity style={ styles.button } onPress={() => router.push({ pathname: `/inspections/create`, params: { assetTag: assetTag?.id } })}>
-							<Text style={ styles.buttonText }>Inspect</Text>
-						</TouchableOpacity>
+						<LinkButton href={{ pathname: `../inspections/create`, params: { assetTag: assetTag?.id } }} label="Inspect" />
 					</View>
 				</GridRow>
 			</View>
@@ -119,7 +117,7 @@ function AssetTagShow() {
 												<Text>{ fault.raisedComment }</Text>
 											</View>
 											<View style={{ flex: 0 }}>
-												<LinkButton label="Close" href={`/(app)/faults/${ fault.id }`} />
+												<LinkButton href={{ pathname: `../faults/[faultId]`, params: { faultId: fault.id } }} label="Close" />
 											</View>
 										</View>
 									))}
