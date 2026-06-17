@@ -10,7 +10,7 @@ export interface AssetTag {
 	rfid: string | null,
 	locationId: string,
 	height: string,
-	vintage: number,
+	vintage?: number,
 	assetTemplateId: string,
 	assetTemplateRevisionId: string,
 	assetTemplate: AssetTemplate,
