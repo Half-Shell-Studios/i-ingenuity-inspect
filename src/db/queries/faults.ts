@@ -37,7 +37,7 @@ export async function getClosedFaults( db: AppDatabase | null ) {
 	return queryFaults(db, isNotNull( faultsTable.closedAt ) );
 }
 
-export async function getFaultById( db: AppDatabase, faultId: string ) {
+export async function getFaultById( db: AppDatabase | null, faultId: string ) {
 	if( !db ) throw new Error( 'Database not initialised' );
 
 	return db.query.faultsTable.findFirst({
