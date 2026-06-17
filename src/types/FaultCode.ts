@@ -4,5 +4,5 @@ export interface FaultCode {
 	description: string;
 	colour: string;
 	remediateWithin: number;
-	risk: number;
+	risk: number | null;
 }
