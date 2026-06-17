@@ -1,6 +1,6 @@
 import { Href, Link } from 'expo-router';
-import React from 'react';
 import { StyleSheet, Text } from 'react-native';
+import { ACCENT_COLOUR } from '../constants/colours';
 
 export default function LinkButton({ label, href }: { label: string, href: Href }) {
 	return (
@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
 	button: {
 		paddingBlock: 8,
 		paddingInline: 16,
-		backgroundColor: "#7863FB",
+		backgroundColor: ACCENT_COLOUR,
 		borderRadius: 4,
 	},
 	buttonText: {
