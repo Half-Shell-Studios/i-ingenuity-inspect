@@ -13,6 +13,8 @@ const faultsWith = {
 			location: true,
 		},
 	},
+	inspection: true,
+	faultCode: true
 } as const;
 
 function queryFaults( db: AppDatabase, where?: SQL ) {
