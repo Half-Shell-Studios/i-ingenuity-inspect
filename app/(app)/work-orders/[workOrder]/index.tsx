@@ -113,7 +113,6 @@ export default function WorkOrder() {
 					</View>
 					<Text style={ styles.lead }>Locations</Text>
 				</View>
-				<Text style={ styles.lead }>Locations</Text>
 				<CardsContainer>
 					{parsedLocations?.length > 0 && parsedLocations?.map( customer => (
 						<Card key={ customer.id }>
