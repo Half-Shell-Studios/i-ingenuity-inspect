@@ -46,10 +46,10 @@ export default function AssetTagsIndex() {
 	}, [ db, dbIsReady ]);
 	
 	if( dbError ) return <Text>Error: { dbError }</Text>;
-
+	
 	if( !dbIsReady || !db || ( dbIsReady && ( tags?.length < 1 ) ) ) return (
-		<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-			<ActivityIndicator />
+		<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+			<ActivityIndicator size="large" color={ ACCENT_COLOUR } />
 		</View>
 	);
 
