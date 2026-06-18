@@ -15,4 +15,13 @@ export interface InspectionTemplateRevision {
 	template: string;
 }
 
+export interface InspectionQuestion {
+	content: string;
+	id: string;
+	noac: boolean;
+	noap: boolean;
+	noex: boolean;
+	type: string;
+}
+
 export default InspectionTemplate
