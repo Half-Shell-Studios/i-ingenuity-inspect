@@ -1,5 +1,6 @@
 import { assetTagsTable } from "@/src/db/schema/assetTags";
 import { inspectionTemplatesTable } from "@/src/db/schema/inspectionTemplates";
+import { inspectionTypesTable } from "@/src/db/schema/inspectionTypes";
 import { usersTable } from "@/src/db/schema/users";
 import type { InspectionAnswers } from "@/src/types/Inspection";
 import { relations } from "drizzle-orm";
@@ -27,10 +28,16 @@ export const inspectionsRelations = relations(
 			fields: [ inspectionsTable.assetTagId ],
 			references: [ assetTagsTable.id ],
 		}),
+		inspectionType: one(
+			inspectionTypesTable, {
+				fields: [ inspectionsTable.inspectionTypeId ],
+				references: [ inspectionTypesTable.id ],
+			}
+		),
 		inspectionTemplate: one(
 			inspectionTemplatesTable, {
 				fields: [ inspectionsTable.inspectionTemplateId ],
-				references: [ inspectionTemplatesTable.id],
+				references: [ inspectionTemplatesTable.id ],
 			}
 		),
 		inspectedByUser: one(
