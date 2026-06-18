@@ -9,15 +9,27 @@ import { ACCENT_COLOUR } from '@/src/constants/colours';
 import { useWorkOrderDb } from '@/src/context/WorkOrderDbContext';
 import { getClosedFaults, getOpenFaults } from '@/src/db/queries/faults';
 import { Fault } from '@/src/types';
+import { Link } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 
 function FaultCard({ fault }: { fault: Fault }) {
 	if( !fault.assetTag ) return <Text>Tag not found</Text>
 
 	return (
 		<Card>
-			<CardTitle title={ fault.faultCodeId } />
+			{ !!fault?.faultCode?.name && (
+				<View style={{ marginBottom: 10 }}>
+					<Link href={{
+						pathname: `./faults/[faultId]`,
+						params: {
+							faultId: fault.id
+						}
+					}}>
+						<CardTitle title={ fault?.faultCode?.name } />
+					</Link>
+				</View>
+			)}
 			{ !!fault.assetTag.location && (
 				<View style={{ marginBottom: 10 }}>
 					<Text style={{ fontSize: 12, color: "#6b7280" }}>Location</Text>
@@ -115,5 +127,3 @@ export default function FaultsIndex() {
 		</ScrollViewContainer>
 	</>);
 }
-
-const styles = StyleSheet.create({})
