@@ -1,9 +1,9 @@
-import { ReactNode } from "react"
-import { StyleSheet, View } from "react-native"
+import React from "react"
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native"
 
-function GridRow({ children }: { children: ReactNode }) {
+function GridRow({ children, style }: { children: React.ReactNode, style?: StyleProp<ViewStyle> }) {
 	return (
-		<View style={ styles.row }>
+		<View style={[ styles.row, style ]}>
 			{ children }
 		</View>
 	)
@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
 	row: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
-		alignItems: "flex-start"
+		alignItems: 'flex-start'
 	}
 })
 
