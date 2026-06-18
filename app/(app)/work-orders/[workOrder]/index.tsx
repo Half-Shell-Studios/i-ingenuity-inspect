@@ -11,7 +11,7 @@ import { ACCENT_COLOUR } from '@/src/constants/colours';
 import { useWorkOrderDb } from "@/src/context/WorkOrderDbContext";
 import * as locationsQuery from "@/src/db/queries/locations";
 import type { Location } from "@/src/types";
-import { useLocalSearchParams } from "expo-router";
+import { Link, useLocalSearchParams } from "expo-router";
 import { Fragment, useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
@@ -104,6 +104,9 @@ export default function WorkOrder() {
 
 	return (<>
 		<ScrollViewContainer>
+			<View style={{ marginBottom: 10 }}>
+				<Link href="/dashboard" replace>{ `<` } Back to start</Link>
+			</View>
 			<ScreenTitle title="Work Order" />
 
 			<View style={{ marginBottom: 20 }}>
@@ -153,57 +156,6 @@ export default function WorkOrder() {
 					))}
 				</CardsContainer>
 			</View>
-			
-			{/* <View style={{ marginBottom: 20 }}>
-				<Text style={ styles.lead }>Locations</Text>
-				{locations?.map( location => (
-					<View key={ location.id }>
-						<Text style={ styles.title }>
-							{ JSON.stringify( location ) }
-						</Text>
-					</View>
-				))}
-			</View>
-			<View style={{ marginBottom: 20 }}>
-				<Text style={ styles.lead }>Customers</Text>
-				{customers?.map( customer => (
-					<View key={ customer.id }>
-						<Text style={ styles.title }>
-							{ customer.customerName }
-						</Text>
-					</View>
-				))}
-			</View>
-			<View style={{ marginBottom: 20 }}>
-				<Text style={ styles.lead }>Sites</Text>
-				{sites?.map( site => (
-					<View key={ site.id }>
-						<Text style={ styles.title }>
-							{ site.siteName }
-						</Text>
-					</View>
-				))}
-			</View>
-			<View style={{ marginBottom: 20 }}>
-				<Text style={ styles.lead }>Plants</Text>
-				{plants?.map( plant => (
-					<View key={ plant.id }>
-						<Text style={ styles.title }>
-							{ plant.plantName }
-						</Text>
-					</View>
-				))}
-			</View>
-			<View style={{ marginBottom: 20 }}>
-				<Text style={ styles.lead }>Areas</Text>
-				{areas?.map( area => (
-					<View key={ area.id }>
-						<Text style={ styles.title }>
-							{ area.areaName }
-						</Text>
-					</View>
-				))}
-			</View> */}
 		</ScrollViewContainer>
 	</>);
 }
