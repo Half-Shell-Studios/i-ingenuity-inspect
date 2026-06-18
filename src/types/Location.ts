@@ -1,9 +1,9 @@
 export interface Location {
-	id: string,
-	customerName?: string,
-	siteName?: string,
-	plantName?: string,
-	areaName?: string
+	id: string;
+	customerName?: string;
+	siteName?: string;
+	plantName?: string;
+	areaName?: string;
 }
 
 export interface Customer {
@@ -27,9 +27,9 @@ export interface Area {
 }
 
 export interface GroupedLocations {
-	id: string,
-	customer: Customer,
-	sites: Site[]
+	id: string;
+	customer: Customer;
+	sites: Site[];
 }
 
 export default Location;

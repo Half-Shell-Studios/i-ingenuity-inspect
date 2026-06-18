@@ -1,9 +1,9 @@
-import type AssetTemplateRevision from "./AssetTemplateRevision"
+import type AssetTemplateRevision from "./AssetTemplateRevision";
 
 export interface AssetTemplate {
-	id: string,
-	revisionActiveId?: string,
-	revisionActive?: AssetTemplateRevision,
+	id: string;
+	revisionActiveId?: string;
+	revisionActive?: AssetTemplateRevision;
 }
 
 export default AssetTemplate

@@ -1,32 +1,32 @@
 export interface AssetTemplateRevision {
-	id: string,
-	assetTemplateId: string,
-	classification: string,
-	manufacturer: string,
-	model: string,
-	type: string,
-	description: string | null,
-	ipRating: string | null,
-	protection: string | null,
-	serviceLife?: number,
-	certificateNumbers: string | null,
-	customFields: string | null,
-	metadata: string | null,
-	version: string | null,
-	state: string,
-	stateComments: string | null,
-	draftedBy: string | null,
-	completedAt: number | null,
-	completedBy: string | null,
-	checkedAt: number | null,
-	checkedBy: string | null,
-	approvedAt: number | null,
-	approvedBy: string | null,
-	declinedAt: number | null,
-	declinedBy: string | null,
-	createdAt: number,
-	updatedAt: number,
-	deletedAt: number | null,
+	id: string;
+	assetTemplateId: string;
+	classification: string;
+	manufacturer: string;
+	model: string;
+	type: string;
+	description: string | null;
+	ipRating: string | null;
+	protection: string | null;
+	serviceLife?: number;
+	certificateNumbers: string | null;
+	customFields: string | null;
+	metadata: string | null;
+	version: string | null;
+	state: string;
+	stateComments: string | null;
+	draftedBy: string | null;
+	completedAt: number | null;
+	completedBy: string | null;
+	checkedAt: number | null;
+	checkedBy: string | null;
+	approvedAt: number | null;
+	approvedBy: string | null;
+	declinedAt: number | null;
+	declinedBy: string | null;
+	createdAt: number;
+	updatedAt: number;
+	deletedAt: number | null;
 }
 
 export default AssetTemplateRevision;

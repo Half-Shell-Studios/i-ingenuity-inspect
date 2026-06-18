@@ -1,7 +1,7 @@
 export interface InspectionType {
-	id: string,
-	name: string,
-	description: string | null,
+	id: string;
+	name: string;
+	description: string | null;
 }
 
 export default InspectionType;
