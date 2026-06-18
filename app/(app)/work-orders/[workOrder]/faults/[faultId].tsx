@@ -11,10 +11,12 @@ import { ACCENT_COLOUR } from '@/src/constants/colours';
 import { useAuth } from '@/src/context/AuthContext';
 import { useWorkOrderDb } from '@/src/context/WorkOrderDbContext';
 import { closeFault, getFaultById } from '@/src/db/queries/faults';
-import type { Fault } from '@/src/types';
+import { InspectionQuestion, type Fault, type InspectionTemplate } from '@/src/types';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { Dimensions, StyleSheet, Text, TextInput, View } from 'react-native';
+
+const { width: screenWidth } = Dimensions.get( 'window' );
 
 export default function FaultShow() {
 	const { user } = useAuth();
@@ -24,6 +26,9 @@ export default function FaultShow() {
 	const [ fault, setFault ] = useState<Fault>();
 	const [ faultComment, setFaultComment ] = useState<string>('');
 	const [ loading, setLoading ] = useState<boolean>(false);
+	const [ inspectionTemplate, setInspectionTemplate ] = useState<any>();
+	const [ faultSectionName, setFaultSectionName ] = useState<string>();
+	const [ faultQuestion, setFaultQuestion ] = useState<InspectionQuestion>();
 
 	useEffect(() => {
 		if( dbIsReady ) {
@@ -32,6 +37,27 @@ export default function FaultShow() {
 			})();
 		}
 	}, [ db, faultId ]);
+
+	useEffect(() => {
+		if( fault === undefined ) return;
+
+		const _inspectionTemplate: InspectionTemplate | undefined = fault.inspection?.inspectionTemplate;
+
+		setInspectionTemplate( _inspectionTemplate );
+
+		const _assessmentCriteria = JSON.parse( _inspectionTemplate?.revisionActive?.template ?? '{}' );
+		
+		if( Object.keys( _assessmentCriteria ?? {} ).length > 0 ) {
+			const _faultSection = _assessmentCriteria[`${ fault.section }`];
+			setFaultSectionName( _faultSection?.name ?? '' );
+
+			if( Object.keys( _assessmentCriteria[`${ fault.section }`].questions ?? {} ).length > 0 ) {
+				const _faultQuestion = _assessmentCriteria[`${ fault.section }`].questions[`${ fault.question }`];
+
+				setFaultQuestion( _faultQuestion );
+			}
+		}
+	}, [ fault ]);
 
 	const handleCloseFault = async () => {
 		setLoading( true );
@@ -52,7 +78,7 @@ export default function FaultShow() {
 			<ScreenTitle title="Fault Details" />
 			<CardsContainer>
 				<GridRow style={{ marginInline: -10 }}>
-					<GridColumn style={{ width: '50%', paddingInline: 10 }}>
+					<GridColumn style={ styles.column }>
 						<Card>
 							<View style={{ marginBottom: 20 }}>
 								<CardTitle title="Assessment Criteria" />
@@ -66,30 +92,38 @@ export default function FaultShow() {
 								<Text>{ fault?.inspection?.inspectionType?.name }</Text>
 							</View>
 							<View style={{ marginBottom: 10 }}>
-								<CardLabel title='Inspection Section' />
-								<Text>{ fault?.section }</Text>
+								<CardLabel title='Inspection Template' />
+								<Text>{ inspectionTemplate?.revisionActive?.name ?? '' }</Text>
 							</View>
-							<View>
-								<CardLabel title='Inspection Question' />
-								<Text>{ fault?.question }</Text>
-							</View>
+							{ !!faultSectionName && (
+								<View style={{ marginBottom: 10 }}>
+									<CardLabel title='Inspection Section' />
+									<Text>{ faultSectionName }</Text>
+								</View>
+							)}
+							{ !!faultQuestion && (
+								<View>
+									<CardLabel title='Inspection Question' />
+									<Text>{ `${ faultQuestion?.id } ${ faultQuestion?.content }`}</Text>
+								</View>
+							)}
 						</Card>
 					</GridColumn>
-					<GridColumn style={{ width: '50%', paddingInline: 10 }}>
+					<GridColumn style={ styles.column }>
 						<Card>
 							<View style={{ marginBottom: 20 }}>
 								<CardTitle title="Fault Code" />
 							</View>
 							<View style={{ marginBottom: 10 }}>
-								<GridRow>
+								<GridRow style={{ marginBottom: 5, alignItems: "center" }}>
 									<GridColumn style={{ marginRight: 5 }}>
 										<View style={{ width: 20, height: 20, borderRadius: 100, backgroundColor: fault?.faultCode?.colour }}></View>
 									</GridColumn>
 									<GridColumn>
 										<Text>{ fault?.faultCode?.name }</Text>
-										<Text>{ fault?.faultCode?.description }</Text>
 									</GridColumn>
 								</GridRow>
+								<Text>{ fault?.faultCode?.description }</Text>
 							</View>
 							<View style={{ marginBottom: 10 }}>
 								<CardLabel title='Risk Score' />
@@ -120,6 +154,10 @@ export default function FaultShow() {
 }
 
 const styles = StyleSheet.create({
+	column: {
+		width: screenWidth > 768 ? '50%' : '100%',
+		paddingInline: 10
+	},
 	input: {
 		fontSize: 16,
 		padding: 14,
