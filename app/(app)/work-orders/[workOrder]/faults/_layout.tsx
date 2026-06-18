@@ -1,5 +1,4 @@
 import { Stack } from 'expo-router';
-import React from 'react';
 
 export default function FaultsLayout() {
 	return (
@@ -7,7 +6,7 @@ export default function FaultsLayout() {
 			<Stack.Screen name="index" options={{
 				title: "Faults"
 			}} />
-			<Stack.Screen name="[fault]" options={{
+			<Stack.Screen name="[faultId]" options={{
 				title: "Fault"
 			}} />
 		</Stack>
