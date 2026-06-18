@@ -1,4 +1,4 @@
-import { workOrdersApi } from "@/src/api/workOrders";
+import { deleteLocalDb, workOrdersApi } from "@/src/api/workOrders";
 import Card from "@/src/components/Card";
 import CardsContainer from "@/src/components/CardsContainer";
 import CardTitle from "@/src/components/CardTitle";
@@ -10,7 +10,7 @@ import { useWorkOrderDb } from "@/src/context/WorkOrderDbContext";
 import type { WorkOrder } from "@/src/types";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 function WorkOrdersIndex() {
 	const router = useRouter();
@@ -53,6 +53,17 @@ function WorkOrdersIndex() {
 		}
 	}
 
+	async function handleLongPress( workOrder: WorkOrder ) {
+		Alert.alert('Delete Work Order', `Are you sure you want to delete ${ workOrder.name } from this device? Any local changes will be lost.`, [{
+			text: 'Cancel',
+			onPress: () => false,
+			style: 'cancel',
+		}, {
+			text: 'OK',
+			onPress: async () => await deleteLocalDb( workOrder.id )
+		}]);
+	}
+
 	async function refreshCallback() {
 		await loadWorkOrders();
 	}
@@ -72,7 +83,7 @@ function WorkOrdersIndex() {
 			<Text style={ styles.greeting }>Your Active Work Orders</Text>
 			<CardsContainer>
 				{workOrders.map( workOrder  => (
-					<TouchableOpacity key={ workOrder.id } disabled={ downloading !== null } onPress={ () => handlePress( workOrder ) }>
+					<TouchableOpacity key={ workOrder.id } disabled={ downloading !== null } onPress={ () => handlePress( workOrder ) } onLongPress={() => handleLongPress( workOrder ) }>
 						<Card>
 							<View style={{ flexDirection: "row", justifyContent: "space-between"}}>
 								<CardTitle title={ workOrder.name } />
