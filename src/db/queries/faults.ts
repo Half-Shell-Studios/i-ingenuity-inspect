@@ -13,7 +13,16 @@ const faultsWith = {
 			location: true,
 		},
 	},
-	inspection: true,
+	inspection: {
+		with: {
+			inspectionType: true,
+			inspectionTemplate: {
+				with: {
+					revisionActive: true
+				}
+			}
+		}
+	},
 	faultCode: true
 } as const;
 
