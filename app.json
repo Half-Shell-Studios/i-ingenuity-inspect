@@ -2,7 +2,7 @@
   "expo": {
     "name": "i-ingenuity-inspect",
     "slug": "i-ingenuity-inspect",
-    "version": "1.0.0",
+    "version": "0.1.5",
     "orientation": "default",
     "icon": "./assets/images/icon.png",
     "scheme": "iingenuityinspect",
