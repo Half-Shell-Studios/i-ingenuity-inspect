@@ -59,7 +59,7 @@ export function WorkOrderDbProvider({ children }: { children: ReactNode }) {
 			await closeExisting();
 
 			// 3. Open and wrap with Drizzle
-			const drizzleDb = openDb( `${uuid}.db` );
+			const drizzleDb = openDb( `${uuid}.sqlite` );
 			setDb( drizzleDb );
 
 			// 4. Persist active work order
