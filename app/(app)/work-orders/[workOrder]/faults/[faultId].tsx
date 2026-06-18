@@ -1,4 +1,5 @@
 import Card from '@/src/components/Card';
+import CardLabel from '@/src/components/CardLabel';
 import CardsContainer from '@/src/components/CardsContainer';
 import CardTitle from '@/src/components/CardTitle';
 import GridColumn from '@/src/components/GridColumn';
@@ -48,26 +49,70 @@ export default function FaultShow() {
 	return (<>
 		<Stack.Screen options={{ title: fault?.faultCode?.name ?? "Close Fault" }} />
 		<ScrollViewContainer>
+			<ScreenTitle title="Fault Details" />
+			<CardsContainer>
+				<GridRow style={{ marginInline: -10 }}>
+					<GridColumn style={{ width: '50%', paddingInline: 10 }}>
+						<Card>
+							<View style={{ marginBottom: 20 }}>
+								<CardTitle title="Assessment Criteria" />
+							</View>
+							<View style={{ marginBottom: 10 }}>
+								<CardLabel title='Inspection' />
+								<Text>{ fault?.inspection?.name }</Text>
+							</View>
+							<View style={{ marginBottom: 10 }}>
+								<CardLabel title='Inspection Type' />
+								<Text>{ fault?.inspection?.inspectionType?.name }</Text>
+							</View>
+							<View style={{ marginBottom: 10 }}>
+								<CardLabel title='Inspection Section' />
+								<Text>{ fault?.section }</Text>
+							</View>
+							<View>
+								<CardLabel title='Inspection Question' />
+								<Text>{ fault?.question }</Text>
+							</View>
+						</Card>
+					</GridColumn>
+					<GridColumn style={{ width: '50%', paddingInline: 10 }}>
+						<Card>
+							<View style={{ marginBottom: 20 }}>
+								<CardTitle title="Fault Code" />
+							</View>
+							<View style={{ marginBottom: 10 }}>
+								<GridRow>
+									<GridColumn style={{ marginRight: 5 }}>
+										<View style={{ width: 20, height: 20, borderRadius: 100, backgroundColor: fault?.faultCode?.colour }}></View>
+									</GridColumn>
+									<GridColumn>
+										<Text>{ fault?.faultCode?.name }</Text>
+										<Text>{ fault?.faultCode?.description }</Text>
+									</GridColumn>
+								</GridRow>
+							</View>
+							<View style={{ marginBottom: 10 }}>
+								<CardLabel title='Risk Score' />
+								<Text>{ fault?.faultCode?.risk }</Text>
+							</View>
+							{ !!fault?.faultCode?.risk && (
+								<View>
+									<CardLabel title='Remediation Deadline' />
+									<Text>{ `${ fault?.faultCode?.remediateWithin } day${ fault?.faultCode?.remediateWithin > 1 ? 's' : '' }` }</Text>
+								</View>
+							)}
+						</Card>
+					</GridColumn>
+				</GridRow>
+			</CardsContainer>
 			<ScreenTitle title="Close Fault" />
 			<CardsContainer>
 				<Card>
-					<View style={{ marginBottom: 20 }}>
-						<CardTitle title="Fault Code" />
-					</View>
-					<GridRow>
-						<GridColumn style={{ marginRight: 5 }}>
-							<View style={{ width: 20, height: 20, borderRadius: 100, backgroundColor: fault?.faultCode?.colour }}></View>
-						</GridColumn>
-						<GridColumn>
-							<Text>{ fault?.faultCode?.name }</Text>
-							<Text>{ fault?.faultCode?.description }</Text>
-						</GridColumn>
-					</GridRow>
+					<Text style={{ marginBottom: 10 }}>Fault Closure Comment</Text>
+					<TextInput multiline numberOfLines={ 5 } placeholder="Fault closure comment..." value={ faultComment } onChangeText={ setFaultComment } textAlignVertical="top" style={ styles.input } />
+					<TouchableOpacityButton label="Close Fault" pressHandler={ handleCloseFault } activity={ loading } />
 				</Card>
 			</CardsContainer>
-			<Text style={{ marginBottom: 10 }}>Fault Closure Comment</Text>
-			<TextInput multiline numberOfLines={ 5 } placeholder="Fault closure comment..." value={ faultComment } onChangeText={ setFaultComment } textAlignVertical="top" style={ styles.input } />
-			<TouchableOpacityButton label="Close Fault" pressHandler={ handleCloseFault } activity={ loading } />
 
 			{/* TODO: Redirect back to fautls index */}
 		</ScrollViewContainer>
