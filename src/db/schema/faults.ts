@@ -19,7 +19,7 @@ export const faultsTable = sqliteTable( 'faults', {
 	closedAt: text( 'closed_at' ),
 	closedBy: text( 'closed_by' ),
 	closedComment: text( 'closed_comment' ),
-	new: integer( 'new', { mode: 'boolean' } ).default( true ),
+	isNew: integer( 'is_new', { mode: 'boolean' } ).default( true ),
 });
 
 export const faultsRelations = relations(

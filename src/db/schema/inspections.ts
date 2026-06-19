@@ -20,7 +20,7 @@ export const inspectionsTable = sqliteTable( 'inspections', {
 	assessment: text( 'assessment', { mode: "json" }).$type<InspectionAnswers[]>().notNull(),
 	notes: text( 'notes' ),
 	inspectedBy: text( 'inspected_by' ).notNull(),
-	new: integer( 'new', { mode: 'boolean' } ).default( true ),
+	isNew: integer( 'is_new', { mode: 'boolean' } ).default( true ),
 });
 
 export const inspectionsRelations = relations(
