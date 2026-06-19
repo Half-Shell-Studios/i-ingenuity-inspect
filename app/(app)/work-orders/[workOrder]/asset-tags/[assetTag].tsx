@@ -58,16 +58,16 @@ function AssetTagShow() {
 			<CardsContainer>
 				<Card>
 					<GridRow>
-						{ assetTag?.height && (
+						{ !!( assetTag?.height ?? false ) && assetTag?.height !== 'NULL' && (
 							<View style={{ flex: 1 }}>
 								<Text style={ styles.lead }>Tag Height</Text>
-								<CardTitle title={ assetTag.height } />
+								<CardTitle title={ assetTag?.height ?? '' } />
 							</View>
 						)}
-						{ assetTag?.vintage && (
+						{ !!assetTag?.vintage && (
 							<View style={{ flex: 1 }}>
 								<Text style={ styles.lead }>Tag Vintage</Text>
-								<CardTitle title={ assetTag.vintage } />
+								<CardTitle title={ assetTag?.vintage ?? '' } />
 							</View>
 						)}
 					</GridRow>
