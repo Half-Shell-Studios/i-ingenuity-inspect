@@ -4,6 +4,7 @@ import CustomersIcon from '@/assets/icons/customers.svg';
 import PlantsIcon from '@/assets/icons/plants.svg';
 import SitesIcon from '@/assets/icons/sites.svg';
 import Card from "@/src/components/Card";
+import CardLabel from '@/src/components/CardLabel';
 import CardsContainer from "@/src/components/CardsContainer";
 import CardTitle from "@/src/components/CardTitle";
 import GridColumn from "@/src/components/GridColumn";
@@ -19,7 +20,7 @@ import * as locationsQuery from "@/src/db/queries/locations";
 import type { Area, Customer, Plant, Site } from "@/src/types";
 import AssetTag from "@/src/types/AssetTag";
 import { useRouter } from "expo-router";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ActivityIndicator, Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const { width: screenWidth } = Dimensions.get( 'window' );
@@ -65,7 +66,7 @@ export default function AssetTagsIndex() {
 						<View style={{ marginInline: -5 }}>
 							<GridRow>
 								<GridColumn style={ styles.filtersColumn }>
-									<GridRow>
+									<GridRow style={{ alignItems: 'center', marginBottom: 10 }}>
 										<GridColumn style={ styles.iconContainer }>
 											<Icon icon={ CustomersIcon } width={ 26 } height={ 26 } color={ ACCENT_COLOUR } />
 										</GridColumn>
@@ -77,7 +78,7 @@ export default function AssetTagsIndex() {
 									</GridRow>
 								</GridColumn>
 								<GridColumn style={ styles.filtersColumn }>
-									<GridRow>
+									<GridRow style={{ alignItems: 'center', marginBottom: 10 }}>
 										<GridColumn style={ styles.iconContainer }>
 											<Icon icon={ SitesIcon } width={ 26 } height={ 26 } color={ ACCENT_COLOUR } />
 										</GridColumn>
@@ -89,7 +90,7 @@ export default function AssetTagsIndex() {
 									</GridRow>
 								</GridColumn>
 								<GridColumn style={ styles.filtersColumn }>
-									<GridRow>
+									<GridRow style={{ alignItems: 'center', marginBottom: 10 }}>
 										<GridColumn style={ styles.iconContainer }>
 											<Icon icon={ PlantsIcon } width={ 26 } height={ 26 } color={ ACCENT_COLOUR } />
 										</GridColumn>
@@ -101,7 +102,7 @@ export default function AssetTagsIndex() {
 									</GridRow>
 								</GridColumn>
 								<GridColumn style={ styles.filtersColumn }>
-									<GridRow>
+									<GridRow style={{ alignItems: 'center', marginBottom: 10 }}>
 										<GridColumn style={ styles.iconContainer }>
 											<Icon icon={ AreasIcon } width={ 26 } height={ 26 } color={ ACCENT_COLOUR } />
 										</GridColumn>
@@ -124,8 +125,8 @@ export default function AssetTagsIndex() {
 				{ tags.map(( tag ) => (
 					<TouchableOpacity key={ tag.id } onPress={ () => router.push( `./asset-tags/${ tag.id }` ) }>
 						<Card>
-							<View style={{ marginBottom: 30 }}>
-								<GridRow>
+							<View style={{ marginBottom: 20 }}>
+								<GridRow style={{ alignItems: 'center', marginBottom: 10 }}>
 									<GridColumn>
 										<View style={ styles.iconContainer }>
 											<Icon icon={ AssetTagIcon } />
@@ -135,32 +136,38 @@ export default function AssetTagsIndex() {
 										<Text style={ styles.cardTitle }>
 											{ tag.name }
 										</Text>
+										{ tag?.description && (
+											<Text style={ styles.cardDesc }>
+												{ tag.description }
+											</Text>
+										)}
 									</GridColumn>
 								</GridRow>
 							</View>
-							{ tag?.description && (
-								<Text style={ styles.cardDesc }>
-									{ tag.description }
+							<View style={{ marginBottom: 20 }}>
+								<CardLabel title='Element' />
+								<Text style={ styles.cardTitle }>
+									{ tag.assetTemplate?.revisionActive?.manufacturer } { tag.assetTemplate?.revisionActive?.model }
 								</Text>
-							)}
-							<Text>Element</Text>
-							<Text style={ styles.cardTitle }>
-								{ tag.assetTemplate?.revisionActive?.manufacturer } { tag.assetTemplate?.revisionActive?.model }
-							</Text>
-							{ tag.assetTemplate?.revisionActive?.description && (
-								<Text style={ styles.cardDesc }>
-									{ tag.assetTemplate?.revisionActive?.description }
-								</Text>
-							)}
+								{ tag.assetTemplate?.revisionActive?.description && (
+									<Text style={ styles.cardDesc }>
+										{ tag.assetTemplate?.revisionActive?.description }
+									</Text>
+								)}
+							</View>
 							{( tag.faultsOpen?.length ?? 0 ) > 0 && (<>
-								<Text>Open Faults ({ tag.faultsOpen?.length })</Text>
-								{ tag.faultsOpen?.map((fault, index) => (
-									<Fragment key={ fault.id }>
-										<Text style={ styles.cardTitle }>
-											{ ( index + 1 ) }. { fault.section } - { fault.question }
-										</Text>
-										<Text>{ fault.raisedComment }</Text>
-									</Fragment>
+								<CardLabel title={ `Open Faults (${ tag.faultsOpen?.length })` } />
+								{ tag.faultsOpen?.map( fault => (
+									<View style={{ marginTop: 5, marginBottom: 10 }} key={ fault.id }>
+										<GridRow style={{ marginBottom: 5, alignItems: 'center' }}>
+											<GridColumn style={{ marginRight: 5 }}>
+												<View style={{ width: 20, height: 20, borderRadius: 100, backgroundColor: fault?.faultCode?.colour }}></View>
+											</GridColumn>
+											<GridColumn>
+												<Text>{ fault?.faultCode?.name }</Text>
+											</GridColumn>
+										</GridRow>
+									</View>
 								))}
 							</>)}
 						</Card>
