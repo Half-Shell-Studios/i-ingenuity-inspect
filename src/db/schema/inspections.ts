@@ -4,7 +4,7 @@ import { inspectionTypesTable } from "@/src/db/schema/inspectionTypes";
 import { usersTable } from "@/src/db/schema/users";
 import type { InspectionAnswers } from "@/src/types/Inspection";
 import { relations } from "drizzle-orm";
-import { sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import * as Crypto from "expo-crypto";
 
 export const inspectionsTable = sqliteTable( 'inspections', {
@@ -20,6 +20,7 @@ export const inspectionsTable = sqliteTable( 'inspections', {
 	assessment: text( 'assessment', { mode: "json" }).$type<InspectionAnswers[]>().notNull(),
 	notes: text( 'notes' ),
 	inspectedBy: text( 'inspected_by' ).notNull(),
+	new: integer( 'new', { mode: 'boolean' } ).default( true ),
 });
 
 export const inspectionsRelations = relations(
