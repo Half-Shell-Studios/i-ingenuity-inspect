@@ -17,6 +17,19 @@ export async function getAllAssetTags( db: AppDatabase | null ) {
 				where: isNull(
 					faultsTable.closedAt
 				),
+				with: {
+					inspection: {
+						with: {
+							inspectionType: true,
+							inspectionTemplate: {
+								with: {
+									revisionActive: true
+								}
+							}
+						}
+					},
+					faultCode: true
+				},
 			},
 			faultsClosed: {
 				where: isNotNull(
@@ -49,6 +62,19 @@ export async function getAssetTagById( db: AppDatabase | null, id: string ) {
 				where: isNull(
 					faultsTable.closedAt
 				),
+				with: {
+					inspection: {
+						with: {
+							inspectionType: true,
+							inspectionTemplate: {
+								with: {
+									revisionActive: true
+								}
+							}
+						}
+					},
+					faultCode: true
+				},
 			},
 			faultsClosed: {
 				where: isNotNull(
