@@ -115,7 +115,7 @@ export default function FaultShow() {
 								<CardTitle title="Fault Code" />
 							</View>
 							<View style={{ marginBottom: 10 }}>
-								<GridRow style={{ marginBottom: 5, alignItems: "center" }}>
+								<GridRow style={{ marginBottom: 5, alignItems: 'center' }}>
 									<GridColumn style={{ marginRight: 5 }}>
 										<View style={{ width: 20, height: 20, borderRadius: 100, backgroundColor: fault?.faultCode?.colour }}></View>
 									</GridColumn>
