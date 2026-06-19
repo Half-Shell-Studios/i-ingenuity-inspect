@@ -1,6 +1,6 @@
 import { useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Button, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { ACCENT_COLOUR, BRAND_COLOUR_GREY } from '../constants/colours';
+import { ACCENT_COLOUR, BRAND_COLOUR_DARK_GREY } from '../constants/colours';
 import Choice from './Choice';
 
 type Option = {
@@ -72,7 +72,7 @@ export default function LocationFilter({ placeholder, options }: { placeholder?:
 				{ !!selectedOption ? (
 					<Text style={{ color: ACCENT_COLOUR }}>{ options.find( option => option.value === selectedOption )?.label ?? 'Add a Filter' }</Text>
 				) : (
-					<Text style={{ color: BRAND_COLOUR_GREY }}>{ placeholder ?? 'Add a Filter' }</Text>
+					<Text style={{ color: BRAND_COLOUR_DARK_GREY }}>{ placeholder ?? 'Add a Filter' }</Text>
 				)}
 			</Pressable>
 			<FiltersModal ref={ filtersModal } options={ options } selectedValue={ selectedOption } onSelect={ setSelectedOption } />
