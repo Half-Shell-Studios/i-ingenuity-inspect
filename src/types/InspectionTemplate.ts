@@ -15,6 +15,11 @@ export interface InspectionTemplateRevision {
 	template: string;
 }
 
+export interface InspectionSection {
+	name: string;
+	questions: InspectionQuestion[]
+}
+
 export interface InspectionQuestion {
 	content: string;
 	id: string;
