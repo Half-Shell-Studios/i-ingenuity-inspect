@@ -1,5 +1,4 @@
 import Choice from "@/src/components/Choice";
-import ScreenTitle from "@/src/components/ScreenTitle";
 import ScrollViewContainer from "@/src/components/ScrollViewContainer";
 import TouchableOpacityButton from "@/src/components/TouchableOpacityButton";
 import { useAuth } from "@/src/context/AuthContext";
@@ -7,14 +6,14 @@ import { useWorkOrderDb } from "@/src/context/WorkOrderDbContext";
 import { getAssetTagById } from "@/src/db/queries/assetTags";
 import { createNewInspection, getAllInspectionTypes, getInspectionTemplatesByInspectionType } from "@/src/db/queries/inspections";
 import { AssetTag, InspectionTemplateRevision, InspectionType } from "@/src/types/";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 
 function CreateInspection() {
 	const router = useRouter();
 	const { user } = useAuth();
-	const { assetTag: assetTagId } = useLocalSearchParams<{ assetTag: string }>();
+	const { assetTag: assetTagId } = useLocalSearchParams<{ assetTag: AssetTag[ 'id' ]; }>();
 	const [ inspectionTypes, setInspectionTypes ] = useState<InspectionType[]>([]);
 	const [ inspectionTemplates, setInspectionTemplates ] = useState<InspectionTemplateRevision[]>([]);
 	const [ assetTag, setAssetTag ] = useState<AssetTag>();
@@ -48,7 +47,12 @@ function CreateInspection() {
 
 		const [ inspection ] = result;
 
-		router.push(`/inspections/${ inspection.insertedId }/edit`);
+		router.push({
+			pathname: `./[inspection]/edit`,
+			params: {
+				inspection: inspection.insertedId
+			}
+		});
 	}
 	
 	useEffect(() => {
@@ -89,9 +93,9 @@ function CreateInspection() {
 	if( dbError ) return <Text>Error: { dbError }</Text>;
 	if( !dbIsReady || !db ) return <ActivityIndicator />;
 
-	return (
+	return (<>
+		<Stack.Screen options={{ title: `Create an Inspection for ${ assetTag?.name }` }} />                                                                                                                                             
 		<ScrollViewContainer>
-			<ScreenTitle title={`Create an Inspection for ${ assetTag?.name }`} />
 			<View style={{ marginBottom: 20 }}>
 				<Text style={{ marginBottom: 10 }}>1. Choose your Inspection Type</Text>
 				{inspectionTypes.map( inspectionType => (
@@ -110,10 +114,11 @@ function CreateInspection() {
 					))}
 				</View>
 			)}
-			{/* TODO: Hide button until both options chosen */}
-			<TouchableOpacityButton label="Start Inspection" pressHandler={ startInspection } />
+			{ !!( !!selectedType && !!selectedTemplate ) && (
+				<TouchableOpacityButton label="Start Inspection" pressHandler={ startInspection } />
+			)}
 		</ScrollViewContainer>
-	)
+	</>);
 }
 
 export default CreateInspection
