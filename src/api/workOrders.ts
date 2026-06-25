@@ -54,15 +54,14 @@ export async function deleteLocalDb( uuid: string ): Promise<void> {
 	if( !dbExists( uuid ) ) return;
 
 	for( const extension of [ 'db', 'sqlite' ] ) {
-		for( const suffix of [ '', '-wal', '-shm' ] ) {
+		for( const suffix of [ '', '-wal', '-shm', '-journal' ] ) {
 			const file = new File( sqliteDir, `${ uuid }.${ extension }${ suffix }` );
-			console.log( file );
 
 			if( file.exists ) {
 				file.delete();
-				console.log( `Deleted ${ uuid }.sqlite${ suffix }` );
+				console.log( `Deleted ${ uuid }.${ extension }${ suffix }` );
 			} else {
-				console.log( `File ${ uuid }.sqlite${ suffix } does not exist.` );
+				console.log( `File ${ uuid }.${ extension }${ suffix } does not exist.` );
 			}
 		}
 	}
