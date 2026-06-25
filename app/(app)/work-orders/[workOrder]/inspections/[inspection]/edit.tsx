@@ -1,6 +1,7 @@
 import Card from "@/src/components/Card";
 import CardsContainer from "@/src/components/CardsContainer";
 import CardTitle from "@/src/components/CardTitle";
+import GridColumn from "@/src/components/GridColumn";
 import GridRow from "@/src/components/GridRow";
 import ScreenTitle from "@/src/components/ScreenTitle";
 import ScrollViewContainer from "@/src/components/ScrollViewContainer";
@@ -8,7 +9,7 @@ import TouchableOpacityButton from "@/src/components/TouchableOpacityButton";
 import { useWorkOrderDb } from "@/src/context/WorkOrderDbContext";
 import { getAssetTagById } from "@/src/db/queries/assetTags";
 import { getInspectionById, getInspectionTemplateByRevisionId } from "@/src/db/queries/inspections";
-import { AssetTag, Inspection } from "@/src/types";
+import { AssetTag, Inspection, InspectionQuestion, InspectionSection } from "@/src/types";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
@@ -59,32 +60,32 @@ function EditInspection() {
 				<Text>{ currentInspection?.inspectedBy }</Text>
 			</View>
 			<CardsContainer>
-				{ inspectionTemplate?.map( templateSection => (
+				{ inspectionTemplate?.map(( templateSection: InspectionSection ) => (
 					<Card key={ templateSection?.name }>
 						<View style={{ marginBottom: 10 }}>
 							<CardTitle title={ templateSection?.name } />
 						</View>
 
-						{ templateSection.questions.map( question => (
+						{ templateSection.questions.map( ( question: InspectionQuestion ) => (
 							<View key={ question.id } style={{ marginBottom: 20 }}>
 								<Text style={{ marginBottom: 10 }}>{ question.content }</Text>
 								{ question.type === 'preset-buttons' && (
-									<GridRow>
-										<View style={{ flex: 0, width: 'auto', maxWidth: '50%' }}>
+									<GridRow style={{ marginInline: -10 }}>
+										<GridColumn style={{ flexGrow:1, marginInline: 10 }}>
 											<TouchableOpacityButton label="Fail" pressHandler={ () => answerHandler( 'Fail' ) } colour="error" />
-										</View>
-										<View style={{ flex: 0, width: 'auto', maxWidth: '50%' }}>
+										</GridColumn>
+										<GridColumn style={{ flexGrow:1, marginInline: 10 }}>
 											<TouchableOpacityButton label="Not Accessible" pressHandler={ () => answerHandler( 'Not Accessible' ) } />
-										</View>
-										<View style={{ flex: 0, width: 'auto', maxWidth: '50%' }}>
+										</GridColumn>
+										<GridColumn style={{ flexGrow:1, marginInline: 10 }}>
 											<TouchableOpacityButton label="Not Applicable" pressHandler={ () => answerHandler( 'Not Applicable' ) } />
-										</View>
-										<View style={{ flex: 0, width: 'auto', maxWidth: '50%' }}>
+										</GridColumn>
+										<GridColumn style={{ flexGrow:1, marginInline: 10 }}>
 											<TouchableOpacityButton label="Not Examined" pressHandler={ () => answerHandler( 'Not Examined' ) } />
-										</View>
-										<View style={{ flex: 0, width: 'auto', maxWidth: '50%' }}>
+										</GridColumn>
+										<GridColumn style={{ flexGrow:1, marginInline: 10 }}>
 											<TouchableOpacityButton label="Pass" pressHandler={ () => answerHandler( 'Pass' ) } colour="success" />
-										</View>
+										</GridColumn>
 									</GridRow>
 								)}
 							</View>
