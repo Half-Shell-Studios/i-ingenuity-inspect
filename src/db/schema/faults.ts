@@ -4,7 +4,7 @@ import { inspectionsTable } from "@/src/db/schema/inspections";
 import { locationsTable } from "@/src/db/schema/locations";
 import { usersTable } from "@/src/db/schema/users";
 import { relations } from "drizzle-orm";
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const faultsTable = sqliteTable( 'faults', {
 	id: text( 'id' ).primaryKey(),
@@ -19,7 +19,7 @@ export const faultsTable = sqliteTable( 'faults', {
 	closedAt: text( 'closed_at' ),
 	closedBy: text( 'closed_by' ),
 	closedComment: text( 'closed_comment' ),
-	isNew: integer( 'is_new', { mode: 'boolean' } ).default( true ),
+	syncStatus: text( 'sync_status', { enum: [ 'synced', 'pending'] }).notNull().default( 'pending' ),
 });
 
 export const faultsRelations = relations(
