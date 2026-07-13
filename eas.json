@@ -6,6 +6,9 @@
   "build": {
     "qa": {
       "distribution": "internal",
+	  "env": {
+		"EXPO_PUBLIC_API_URL": "https://beta.i-ingenuity.com/api/v1"
+	  },
       "ios": {
         "simulator": false
       }
@@ -18,7 +21,10 @@
       }
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+	  "env": {
+		"EXPO_PUBLIC_API_URL": "https://beta.i-ingenuity.com/api/v1"
+	  }
     },
     "development-simulator": {
       "developmentClient": true,
