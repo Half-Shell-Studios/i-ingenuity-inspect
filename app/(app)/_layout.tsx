@@ -1,6 +1,8 @@
 import { setLastRoute } from '@/src/utils/storage';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, usePathname, useRouter } from 'expo-router';
 import { useEffect } from 'react';
+import { Pressable, Text, View } from 'react-native';
 
 export function stackOptions( defaultTitle: string ) {
 	return {
@@ -27,24 +29,28 @@ export default function AppLayout() {
 		}
 	}, [pathname]);
 
+	const BackButton = () => (
+		<Pressable onPress={() => router.push( '/work-orders' )} hitSlop={ 10 }>
+			<View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 6 }}>
+				<Ionicons name="chevron-back" size={ 24 } color="#000" /><Text>Dashboard</Text>
+			</View>
+		</Pressable>
+	);
+
 	return (
-		<Stack>
+		<Stack screenOptions={{ headerBackVisible: false }}>
 			<Stack.Screen name="dashboard" options={{
-				title: "Dashboard"
+				title: "Dashboard",
 			}} />
 			<Stack.Screen name="work-orders/index" options={{
 				title: "Work Orders"
 			}} />
 			<Stack.Screen name="work-orders/[workOrder]" options={{
-				title: 'Work Order Details'
+				title: 'Work Order Details',
+				headerShown: true,
+				headerLeft: () => <BackButton />,
+				headerBackVisible: false
 			}} />
-			{/* <Stack.Screen name="asset-tags/index" options={ stackOptions( 'Asset Tags' ) } /> */}
-			{/* <Stack.Screen name="asset-tags/[assetTag]" options={ stackOptions( 'Asset Tag Details' ) } /> */}
-			{/* <Stack.Screen name="inspections/index" options={ stackOptions( 'Inspections' ) } /> */}
-			{/* <Stack.Screen name="inspections/create" options={ stackOptions( 'Inspect a Tag' ) } /> */}
-			{/* <Stack.Screen name="inspections/[inspection]/edit" options={ stackOptions( 'Inspect a Tag' ) } /> */}
-			{/* <Stack.Screen name="inspections/[inspection]/index" options={ stackOptions( 'Inspection Details' ) } /> */}
-			{/* <Stack.Screen name="faults/[fault]" options={ stackOptions( 'Close a Fault' ) } /> */}
 		</Stack>
 	);
 }
