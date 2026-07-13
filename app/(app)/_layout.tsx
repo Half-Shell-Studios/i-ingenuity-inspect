@@ -30,7 +30,7 @@ export default function AppLayout() {
 	}, [pathname]);
 
 	const BackButton = () => (
-		<Pressable onPress={() => router.push( '/work-orders' )} hitSlop={ 10 }>
+		<Pressable onPress={() => router.replace( '/work-orders' )} hitSlop={ 10 }>
 			<View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 6 }}>
 				<Ionicons name="chevron-back" size={ 24 } color="#000" /><Text>Dashboard</Text>
 			</View>
