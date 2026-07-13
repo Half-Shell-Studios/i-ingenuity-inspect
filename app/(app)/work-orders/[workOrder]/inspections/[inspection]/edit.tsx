@@ -9,7 +9,8 @@ import TouchableOpacityButton from "@/src/components/TouchableOpacityButton";
 import { useWorkOrderDb } from "@/src/context/WorkOrderDbContext";
 import { getAssetTagById } from "@/src/db/queries/assetTags";
 import { getInspectionById, getInspectionTemplateByRevisionId } from "@/src/db/queries/inspections";
-import { AssetTag, Inspection, InspectionQuestion, InspectionSection } from "@/src/types";
+import { getUser } from "@/src/db/queries/users";
+import { AssetTag, Inspection, InspectionAssessment, InspectionQuestion, InspectionSection, User } from "@/src/types";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
@@ -18,8 +19,10 @@ function EditInspection() {
 	const { inspection }: { inspection: string } = useLocalSearchParams();
 	const { isReady: dbIsReady, error: dbError, db } = useWorkOrderDb();
 	const [ currentInspection, setCurrentInspection ] = useState<Inspection>();
+	const [ inspectedBy, setInspectedBy ] = useState<User>();
 	const [ inspectionTemplate, setInspectionTemplate ] = useState<[]>();
 	const [ inspectedTag, setInspectedTag ] = useState<AssetTag>();
+	const [ assessment, setAssessment ] = useState<InspectionAssessment>();
 
 	useEffect(() => {
 		if( dbIsReady ) {
@@ -28,6 +31,14 @@ function EditInspection() {
 			))();
 		}
 	}, [ dbIsReady, inspection ])
+	
+	useEffect(() => {
+		if( dbIsReady ) {
+			(async () => (
+				setInspectedBy( await getUser( db, currentInspection?.inspectedBy ) )
+			))();
+		}
+	}, [ dbIsReady, currentInspection ])
 	
 	useEffect(() => {
 		if( dbIsReady && currentInspection ) {
@@ -44,9 +55,24 @@ function EditInspection() {
 		}
 	}, [ dbIsReady, currentInspection ]);
 
-	const answerHandler = ( value: string ) => {
-		alert( value );
+	const answerHandler = ( sectionIndex: number, questionIndex: number, value: string ) => {
+		alert( 'Test... ' + `${ sectionIndex } ${ questionIndex } ${ value }` );
+
+		let _assessment = assessment ?? [];
+
+		_assessment[ sectionIndex ].answers[ questionIndex ] = {
+			pass: true,
+			notes: "This is a test",
+			value: value,
+			faults: []
+		};
+
+		setAssessment( _assessment );
 	}
+
+	useEffect(() => {
+		console.log( "Inspection Assessment: ", assessment );
+	}, [ assessment ]);
 
 	if( dbError ) return <Text>Error: { dbError }</Text>;
 	if( !dbIsReady || !db ) return <ActivityIndicator />;
@@ -57,34 +83,35 @@ function EditInspection() {
 			<ScreenTitle title={ currentInspection?.name } />
 			<View style={{ marginBottom: 20 }}>
 				<Text style={ styles.lead }>Inspected By</Text>
-				<Text>{ currentInspection?.inspectedBy }</Text>
+				<Text>{ inspectedBy?.name }</Text>
 			</View>
 			<CardsContainer>
-				{ inspectionTemplate?.map(( templateSection: InspectionSection ) => (
+				{ inspectionTemplate?.map(( templateSection: InspectionSection, sectionIndex: number ) => (
 					<Card key={ templateSection?.name }>
 						<View style={{ marginBottom: 10 }}>
 							<CardTitle title={ templateSection?.name } />
 						</View>
 
-						{ templateSection.questions.map( ( question: InspectionQuestion ) => (
+						{/* { templateSection.questions.map( question => ( */}
+						{ templateSection.questions.map(( question: InspectionQuestion, questionIndex: number ) => (
 							<View key={ question.id } style={{ marginBottom: 20 }}>
 								<Text style={{ marginBottom: 10 }}>{ question.content }</Text>
 								{ question.type === 'preset-buttons' && (
 									<GridRow style={{ marginInline: -10 }}>
 										<GridColumn style={{ flexGrow:1, marginInline: 10 }}>
-											<TouchableOpacityButton label="Fail" pressHandler={ () => answerHandler( 'Fail' ) } colour="error" />
+											<TouchableOpacityButton label="Fail" pressHandler={ () => answerHandler( sectionIndex, questionIndex, 'Fail' ) } colour="error" />
 										</GridColumn>
 										<GridColumn style={{ flexGrow:1, marginInline: 10 }}>
-											<TouchableOpacityButton label="Not Accessible" pressHandler={ () => answerHandler( 'Not Accessible' ) } />
+											<TouchableOpacityButton label="Not Accessible" pressHandler={ () => answerHandler( sectionIndex, questionIndex, 'Not Accessible' ) } />
 										</GridColumn>
 										<GridColumn style={{ flexGrow:1, marginInline: 10 }}>
-											<TouchableOpacityButton label="Not Applicable" pressHandler={ () => answerHandler( 'Not Applicable' ) } />
+											<TouchableOpacityButton label="Not Applicable" pressHandler={ () => answerHandler( sectionIndex, questionIndex, 'Not Applicable' ) } />
 										</GridColumn>
 										<GridColumn style={{ flexGrow:1, marginInline: 10 }}>
-											<TouchableOpacityButton label="Not Examined" pressHandler={ () => answerHandler( 'Not Examined' ) } />
+											<TouchableOpacityButton label="Not Examined" pressHandler={ () => answerHandler( sectionIndex, questionIndex, 'Not Examined' ) } />
 										</GridColumn>
 										<GridColumn style={{ flexGrow:1, marginInline: 10 }}>
-											<TouchableOpacityButton label="Pass" pressHandler={ () => answerHandler( 'Pass' ) } colour="success" />
+											<TouchableOpacityButton label="Pass" pressHandler={ () => answerHandler( sectionIndex, questionIndex, 'Pass' ) } colour="success" />
 										</GridColumn>
 									</GridRow>
 								)}
