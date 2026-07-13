@@ -34,12 +34,12 @@ function InspectionsIndex() {
 	return (
 		<ScrollViewContainer>
 			<ScreenTitle title="Inspections" />
-			<CardsContainer>
+			{/* <CardsContainer>
 				<Card>
 					<CardTitle title="debugging" />
 					<Text>{ JSON.stringify( inspections ) }</Text>
 				</Card>
-			</CardsContainer>
+			</CardsContainer> */}
 			{ inspections?.length ? (
 				<CardsContainer>
 					{inspections.map( inspection => {
