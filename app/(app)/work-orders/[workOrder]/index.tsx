@@ -104,9 +104,6 @@ export default function WorkOrder() {
 
 	return (<>
 		<ScrollViewContainer>
-			<View style={{ marginBottom: 10 }}>
-				<Link href="/dashboard" replace>{ `<` } Back to start</Link>
-			</View>
 			<ScreenTitle title="Work Order" />
 
 			<View style={{ marginBottom: 20 }}>
