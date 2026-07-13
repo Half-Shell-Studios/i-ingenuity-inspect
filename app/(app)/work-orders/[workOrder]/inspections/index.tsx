@@ -3,12 +3,13 @@ import CardsContainer from "@/src/components/CardsContainer";
 import CardTitle from "@/src/components/CardTitle";
 import ScreenTitle from "@/src/components/ScreenTitle";
 import ScrollViewContainer from "@/src/components/ScrollViewContainer";
+import { ACCENT_COLOUR } from "@/src/constants/colours";
 import { useWorkOrderDb } from "@/src/context/WorkOrderDbContext";
 import { getAllInspections } from "@/src/db/queries/inspections";
 import { Inspection } from "@/src/types";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Text, TouchableOpacity } from "react-native";
+import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
 
 function InspectionsIndex() {
 	const router = useRouter();
@@ -24,7 +25,11 @@ function InspectionsIndex() {
 	}, [ db, dbIsReady ]);
 	
 	if( dbError ) return <Text>Error: { dbError }</Text>;
-	if( !dbIsReady || !db ) return <ActivityIndicator />;
+	if( !dbIsReady || !db || ( dbIsReady && ( inspections?.length < 1 ) ) ) return (
+		<View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+			<ActivityIndicator size="large" color={ ACCENT_COLOUR } />
+		</View>
+	);
 
 	return (
 		<ScrollViewContainer>
