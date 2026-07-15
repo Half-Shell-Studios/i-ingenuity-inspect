@@ -1,16 +1,20 @@
 import Card from "@/src/components/Card";
 import CardsContainer from "@/src/components/CardsContainer";
 import CardTitle from "@/src/components/CardTitle";
+import GridColumn from "@/src/components/GridColumn";
 import GridRow from "@/src/components/GridRow";
 import LinkButton from "@/src/components/LinkButton";
 import ScrollViewContainer from "@/src/components/ScrollViewContainer";
 import { useWorkOrderDb } from "@/src/context/WorkOrderDbContext";
 import { getAssetTagById } from "@/src/db/queries/assetTags";
 import AssetTag from "@/src/types/AssetTag";
+import { convertNullStrings } from "@/src/utils/helpers";
 import { Image, useImage } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import { ActivityIndicator, Dimensions, ScrollView, StyleSheet, Text, useWindowDimensions, View } from "react-native";
+
+const { width: screenWidth } = Dimensions.get( 'window' );
 
 function AssetTagShow() {
 	const router = useRouter();
@@ -31,7 +35,13 @@ function AssetTagShow() {
 	useEffect(() => {
 		if( dbIsReady ) {
 			(async() => {
-				setAssetTag( await getAssetTagById( db, assetTagId ) );
+				const newAssetTag = await getAssetTagById( db, assetTagId );
+				const newAssetTagMetadata = convertNullStrings( JSON.parse( newAssetTag.assetTemplate.revisionActive.metadata ) );
+
+				newAssetTag.assetTemplate.revisionActive.metadata = newAssetTagMetadata;
+
+
+				setAssetTag( newAssetTag );
 			})();
 		}
 	}, [ db, assetTagId ]);
@@ -74,12 +84,47 @@ function AssetTagShow() {
 				</Card>
 
 				<Card>
-					<Text style={ styles.lead }>Asset Template</Text>
-					<CardTitle title={ `${ assetTag?.assetTemplate?.revisionActive?.manufacturer } ${ assetTag?.assetTemplate?.revisionActive?.model }` } />
-					{!!( assetTag?.assetTemplate?.revisionActive?.description ) && (
-						<Text>{ assetTag?.assetTemplate?.revisionActive?.description }</Text>
-					)}
+					<GridRow>
+						<GridColumn style={ styles.column }>
+							<Text style={ styles.lead }>Asset Template</Text>
+							<CardTitle title={ `${ assetTag?.assetTemplate?.revisionActive?.manufacturer } ${ assetTag?.assetTemplate?.revisionActive?.model }` } />
+							{!!( assetTag?.assetTemplate?.revisionActive?.description ) && (
+								<Text>{ assetTag?.assetTemplate?.revisionActive?.description }</Text>
+							)}
+						</GridColumn>
+						<GridColumn style={ styles.column }>
+							<Text style={ styles.lead }>Asset Type</Text>
+							<CardTitle title={ `${ assetTag?.assetTemplate?.revisionActive?.type }` } />
+						</GridColumn>
+						<GridColumn style={ styles.column }>
+							<Text style={ styles.lead }>Classification</Text>
+							<CardTitle title={ `${ assetTag?.assetTemplate?.revisionActive?.classification }` } />
+						</GridColumn>
+					</GridRow>
 				</Card>
+				
+				<Card>
+					<GridRow>
+						<GridColumn style={ styles.column }>
+							<Text style={ styles.lead }>Protection Concept Type</Text>
+							<CardTitle title={ `${ assetTag?.assetTemplate?.revisionActive?.protection }` } />
+						</GridColumn>
+						<GridColumn style={ styles.column }>
+							<Text style={ styles.lead }>IP Rating</Text>
+							<CardTitle title={ `${ assetTag?.assetTemplate?.revisionActive?.ipRating ?? 'Not Set' }` } />
+						</GridColumn>
+						<GridColumn style={ styles.column }>
+							<Text style={ styles.lead }>Gas Group</Text>
+							<CardTitle title={ `${ assetTag?.assetTemplate?.revisionActive?.metadata?.groups?.gas_group ?? 'Not Set' }` } />
+						</GridColumn>
+						<GridColumn style={ styles.column }>
+							<Text style={ styles.lead }>Dust Group</Text>
+							<CardTitle title={ `${ assetTag?.assetTemplate?.revisionActive?.metadata?.groups?.dust_group ?? 'Not Set' }` } />
+						</GridColumn>
+					</GridRow>
+				</Card>
+
+				{/* {"groups":{"gas_group":"IIC","gas_temperature_class":"4","gas_temperature_custom":false,"dust_group":"null","dust_temperature_class":"","dust_temperature_custom":false},"protection":[{"extension":"ia","level":"Ga","type":"i","zone":2}],"isf":[]} */}
 			
 				<Card>
 					<View style={{ marginBottom: 20 }}>
@@ -180,6 +225,10 @@ function AssetTagShow() {
 }
 
 const styles = StyleSheet.create({
+	column: {
+		width: screenWidth > 768 ? '25%' : '50%',
+		paddingInline: 10
+	},
 	lead: {
 		fontSize: 12,
 		color: "rgba(0, 0, 0, 0.5)"
