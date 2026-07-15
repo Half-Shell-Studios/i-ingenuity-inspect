@@ -10,7 +10,7 @@ import { useWorkOrderDb } from "@/src/context/WorkOrderDbContext";
 import { getAssetTagById } from "@/src/db/queries/assetTags";
 import { getInspectionById, getInspectionTemplateByRevisionId } from "@/src/db/queries/inspections";
 import { getUser } from "@/src/db/queries/users";
-import { AssetTag, Inspection, InspectionAssessment, InspectionQuestion, InspectionSection, User } from "@/src/types";
+import { AssetTag, Inspection, InspectionAssessment, InspectionTemplateQuestion, InspectionTemplateSection, User } from "@/src/types";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
@@ -122,31 +122,37 @@ function EditInspection() {
 				<Text>{ inspectedBy?.name }</Text>
 			</View>
 			<CardsContainer>
-				{ inspectionTemplate?.map(( templateSection: InspectionSection, sectionIndex: number ) => (
+				{ inspectionTemplate?.map(( templateSection: InspectionTemplateSection, sectionIndex: number ) => (
 					<Card key={ templateSection?.name }>
 						<View style={{ marginBottom: 10 }}>
 							<CardTitle title={ templateSection?.name } />
 						</View>
 
-						{/* { templateSection.questions.map( question => ( */}
-						{ templateSection.questions.map(( question: InspectionQuestion, questionIndex: number ) => (
+						{ templateSection.questions.map(( question: InspectionTemplateQuestion, questionIndex: number ) => (
 							<View key={ question.id } style={{ marginBottom: 20 }}>
-								<Text style={{ marginBottom: 10 }}>{ question.content }</Text>
+								<GridRow style={{ marginInline: -10, marginBottom: 10, flexWrap: 'nowrap' }}>
+									<GridColumn style={{ flex: 0, minWidth: 0, marginInline: 10 }}>
+										<Text style={{ fontWeight: 600 }}>{ question.id.trim() }</Text>
+									</GridColumn>
+									<GridColumn style={{ flex: 1, minWidth: 0, marginInline: 10 }}>
+										<Text style={{ flexWrap: 'wrap' }}>{ question.content.trim() } { question.content.trim() } { question.content.trim() }</Text>
+									</GridColumn>
+								</GridRow>
 								{ question.type === 'preset-buttons' && (
 									<GridRow style={{ marginInline: -10 }}>
-										<GridColumn style={{ flexGrow:1, marginInline: 10 }}>
+										<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
 											<TouchableOpacityButton label="Fail" pressHandler={ () => answerHandler( sectionIndex, questionIndex, 'Fail' ) } colour="error" />
 										</GridColumn>
-										<GridColumn style={{ flexGrow:1, marginInline: 10 }}>
+										<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
 											<TouchableOpacityButton label="Not Accessible" pressHandler={ () => answerHandler( sectionIndex, questionIndex, 'Not Accessible' ) } />
 										</GridColumn>
-										<GridColumn style={{ flexGrow:1, marginInline: 10 }}>
+										<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
 											<TouchableOpacityButton label="Not Applicable" pressHandler={ () => answerHandler( sectionIndex, questionIndex, 'Not Applicable' ) } />
 										</GridColumn>
-										<GridColumn style={{ flexGrow:1, marginInline: 10 }}>
+										<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
 											<TouchableOpacityButton label="Not Examined" pressHandler={ () => answerHandler( sectionIndex, questionIndex, 'Not Examined' ) } />
 										</GridColumn>
-										<GridColumn style={{ flexGrow:1, marginInline: 10 }}>
+										<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
 											<TouchableOpacityButton label="Pass" pressHandler={ () => answerHandler( sectionIndex, questionIndex, 'Pass' ) } colour="success" />
 										</GridColumn>
 									</GridRow>
@@ -156,11 +162,6 @@ function EditInspection() {
 					</Card>
 				))}
 			</CardsContainer>
-			{/* <Text>Inspector:</Text>
-			<Text>{ currentInspection?.inspectedBy }</Text>
-			<Text>Asset Tag:</Text>
-			<Text>{ currentInspection?.assetTagId }</Text>
-			<Text>{ inspectedTag?.name }</Text> */}
 		</ScrollViewContainer>
 	)
 }
