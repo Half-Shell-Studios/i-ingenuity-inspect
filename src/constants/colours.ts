@@ -14,4 +14,7 @@ export const PRIMARY_COLOUR = BRAND_COLOUR_BLUE;
 export const SECONDARY_COLOUR = BRAND_COLOUR_YELLOW;
 export const ACCENT_COLOUR = BRAND_COLOUR_PURPLE;
 
+export const BODY_TEXT_COLOUR = BRAND_COLOUR_NAVY;
+export const PLACEHOLDER_TEXT_COLOUR = '#9ca3af';
+
 export const darkModeActive = ( Appearance.getColorScheme() === 'dark' );
