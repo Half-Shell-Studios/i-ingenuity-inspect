@@ -1,4 +1,3 @@
-import React from 'react';
 import { ActivityIndicator, GestureResponderEvent, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 type Colour = 'primary' | 'error' | 'success';
@@ -11,7 +10,6 @@ const colourMap: Record<Colour, string> = {
 
 export default function TouchableOpacityButton({ label, pressHandler, activity = false, colour = 'primary' }: { label: string, pressHandler: (event: GestureResponderEvent) => void; activity?: boolean, colour?: Colour }) {
 	return (
-		// <TouchableOpacity style={ styles.button } onPress={ pressHandler }>
 		<TouchableOpacity style={[styles.button, { backgroundColor: colourMap[colour] }]} onPress={ pressHandler }>
 			<Text style={ styles.buttonText }>
 				{ activity ? <ActivityIndicator color="#fff" /> : label }
