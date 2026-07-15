@@ -11,7 +11,7 @@ import { ACCENT_COLOUR } from '@/src/constants/colours';
 import { useAuth } from '@/src/context/AuthContext';
 import { useWorkOrderDb } from '@/src/context/WorkOrderDbContext';
 import { closeFault, getFaultById } from '@/src/db/queries/faults';
-import { InspectionQuestion, type Fault, type InspectionTemplate } from '@/src/types';
+import { InspectionTemplateQuestion, type Fault, type InspectionTemplate } from '@/src/types';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Dimensions, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -28,7 +28,7 @@ export default function FaultShow() {
 	const [ loading, setLoading ] = useState<boolean>(false);
 	const [ inspectionTemplate, setInspectionTemplate ] = useState<any>();
 	const [ faultSectionName, setFaultSectionName ] = useState<string>();
-	const [ faultQuestion, setFaultQuestion ] = useState<InspectionQuestion>();
+	const [ faultQuestion, setFaultQuestion ] = useState<InspectionTemplateQuestion>();
 
 	useEffect(() => {
 		if( dbIsReady ) {
