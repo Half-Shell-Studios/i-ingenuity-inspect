@@ -5,9 +5,9 @@ export interface FaultsObject {
 	[uuid: string]: boolean;
 }
 
-type InspectionAnswer = {
+export type InspectionAnswer = {
 	pass: boolean;
-	notes: string;
+	notes: string | null;
 	value: string;
 	faults: never[] | FaultsObject;
 };
