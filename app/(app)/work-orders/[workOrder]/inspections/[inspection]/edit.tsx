@@ -5,15 +5,30 @@ import GridColumn from "@/src/components/GridColumn";
 import GridRow from "@/src/components/GridRow";
 import ScreenTitle from "@/src/components/ScreenTitle";
 import ScrollViewContainer from "@/src/components/ScrollViewContainer";
-import TouchableOpacityButton from "@/src/components/TouchableOpacityButton";
+import { BRAND_COLOUR_DARK_GREY, ERROR_COLOUR, PLACEHOLDER_TEXT_COLOUR, PRIMARY_COLOUR, SUCCESS_COLOUR, WARNING_COLOUR } from "@/src/constants/colours";
 import { useWorkOrderDb } from "@/src/context/WorkOrderDbContext";
 import { getAssetTagById } from "@/src/db/queries/assetTags";
 import { getInspectionById, getInspectionTemplateByRevisionId } from "@/src/db/queries/inspections";
 import { getUser } from "@/src/db/queries/users";
-import { AssetTag, Inspection, InspectionAssessment, InspectionTemplateQuestion, InspectionTemplateSection, User } from "@/src/types";
+import { AssetTag, Inspection, InspectionAnswer, InspectionAssessment, InspectionTemplateQuestion, InspectionTemplateSection, User } from "@/src/types";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+
+const assessmentButtonColourMap: Record<'primary' | 'error' | 'success' | 'warning', string> = {
+	primary: PRIMARY_COLOUR,
+	success: SUCCESS_COLOUR,
+	error: ERROR_COLOUR,
+	warning: WARNING_COLOUR,
+};
+
+function AssessmentButton({ label, onPress, colour = 'primary', selected = false }: { label: string; onPress: () => void; colour?: 'primary' | 'error' | 'success' | 'warning'; selected?: boolean }) {
+	return (
+		<Pressable style={({ pressed }) => [ styles.button, { borderColor: assessmentButtonColourMap[colour] }, selected ? { backgroundColor: assessmentButtonColourMap[colour], borderColor: assessmentButtonColourMap[colour] } : styles.unselectedButton, pressed && styles.pressed ]} onPress={ onPress }>
+			<Text style={[styles.buttonText, selected ? styles.selectedText : styles.unselectedText]}>{ label }</Text>
+		</Pressable>
+	)
+}
 
 function EditInspection() {
 	const { inspection }: { inspection: string } = useLocalSearchParams();
@@ -55,38 +70,53 @@ function EditInspection() {
 		}
 	}, [ dbIsReady, currentInspection ]);
 
-	const answerHandler = ( sectionIndex: number, questionIndex: number, value: string ) => {
-		setAssessment( ( prevAssessment ) => {
-			const newAssessment: InspectionAssessment = prevAssessment
-				? prevAssessment.map( (s) => ({ ...s, answers: s.answers.map(a => ({ ...a })) }) )
-				: [];
+	const setAnswer = ( sectionIndex: number, questionIndex: number, answerPatch: Partial<InspectionAnswer> ) => {
+		setAssessment( prevAssessment => {
+			const newAssessment: InspectionAssessment = prevAssessment ? prevAssessment.map(s => ({ ...s, answers: s.answers.map(a => ({ ...a })) }) ) : [];
 
-			// Ensure the section exists
-			while ( newAssessment.length <= sectionIndex ) {
-				newAssessment.push({ answers: [], skipped: false, skipped_comment: null });
+			while( newAssessment.length <= sectionIndex ) {
+				newAssessment.push({
+					answers: [],
+					skipped: false,
+					skipped_comment: null
+				});
 			}
 
 			const section = newAssessment[ sectionIndex ];
 
-			// Ensure the answers array has the question index
-			while ( section.answers.length <= questionIndex ) {
-				section.answers.push({ pass: false, notes: "", value: "", faults: [] });
+			while( section.answers.length <= questionIndex ) {
+				section.answers.push({
+					pass: false,
+					notes: null,
+					value: "", 
+					faults: [] 
+				});
 			}
 
-			// Build an InspectionAnswer object matching the type
+			const existingAnswer = section.answers[ questionIndex ];
 			section.answers[ questionIndex ] = {
-				pass: value === 'Pass',
-				notes: "",
-				value,
-				faults: []
+				...existingAnswer,
+				...answerPatch,
 			};
 
 			return newAssessment;
+		});
+	}
+
+	const answerHandler = ( sectionIndex: number, questionIndex: number, value: string ) => {
+		setAnswer( sectionIndex, questionIndex, {
+			pass: value === 'Pass',
+			value,
+			faults: [],
 		} );
 	}
 
+	const commentChangeHandler = ( sectionIndex: number, questionIndex: number, notes: string ) => {
+		setAnswer( sectionIndex, questionIndex, { notes } );
+	}
+
 	useEffect(() => {
-		if ( !assessment ) {
+		if( !assessment ) {
 			console.log( "Inspection Assessment: <empty>" );
 			return;
 		}
@@ -97,10 +127,10 @@ function EditInspection() {
 
 			assessment.forEach( ( section, sIndex ) => {
 				console.log( `Section ${sIndex}:`, section );
-				if ( section.answers && section.answers.length ) {
-					section.answers.forEach( ( ans, qIndex ) => {
+				if( section.answers && section.answers.length ) {
+					section.answers.forEach(( ans, qIndex ) => {
 						console.log( `Section ${sIndex} • Answer ${qIndex}:`, JSON.stringify( ans, null, 2 ) );
-					} );
+					});
 				} else {
 					console.log( `Section ${sIndex} has no answers` );
 				}
@@ -131,32 +161,41 @@ function EditInspection() {
 						{ templateSection.questions.map(( question: InspectionTemplateQuestion, questionIndex: number ) => (
 							<View key={ question.id } style={{ marginBottom: 20 }}>
 								<GridRow style={{ marginInline: -10, marginBottom: 10, flexWrap: 'nowrap' }}>
-									<GridColumn style={{ flex: 0, minWidth: 0, marginInline: 10 }}>
+									<GridColumn style={{ flexGrow: 0, minWidth: 0, marginInline: 10 }}>
 										<Text style={{ fontWeight: 600 }}>{ question.id.trim() }</Text>
 									</GridColumn>
-									<GridColumn style={{ flex: 1, minWidth: 0, marginInline: 10 }}>
-										<Text style={{ flexWrap: 'wrap' }}>{ question.content.trim() } { question.content.trim() } { question.content.trim() }</Text>
+									<GridColumn style={{ flexGrow: 1, minWidth: 0, marginInline: 10 }}>
+										<Text>{ question.content.trim() }</Text>
 									</GridColumn>
 								</GridRow>
 								{ question.type === 'preset-buttons' && (
-									<GridRow style={{ marginInline: -10 }}>
+									<GridRow style={{ marginInline: -10, marginBottom: 10 }}>
 										<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
-											<TouchableOpacityButton label="Fail" pressHandler={ () => answerHandler( sectionIndex, questionIndex, 'Fail' ) } colour="error" />
+											<AssessmentButton label="Fail" onPress={ () => answerHandler( sectionIndex, questionIndex, 'Fail' ) } colour="error" selected={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.value === 'Fail' } />
 										</GridColumn>
 										<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
-											<TouchableOpacityButton label="Not Accessible" pressHandler={ () => answerHandler( sectionIndex, questionIndex, 'Not Accessible' ) } />
+											<AssessmentButton label="Not Accessible" onPress={ () => answerHandler( sectionIndex, questionIndex, 'Not Accessible' ) } colour="warning" selected={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.value === 'Not Accessible' } />
 										</GridColumn>
 										<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
-											<TouchableOpacityButton label="Not Applicable" pressHandler={ () => answerHandler( sectionIndex, questionIndex, 'Not Applicable' ) } />
+											<AssessmentButton label="Not Applicable" onPress={ () => answerHandler( sectionIndex, questionIndex, 'Not Applicable' ) } colour="warning" selected={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.value === 'Not Applicable' } />
 										</GridColumn>
 										<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
-											<TouchableOpacityButton label="Not Examined" pressHandler={ () => answerHandler( sectionIndex, questionIndex, 'Not Examined' ) } />
+											<AssessmentButton label="Not Examined" onPress={ () => answerHandler( sectionIndex, questionIndex, 'Not Examined' ) } colour="warning" selected={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.value === 'Not Examined' } />
 										</GridColumn>
 										<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
-											<TouchableOpacityButton label="Pass" pressHandler={ () => answerHandler( sectionIndex, questionIndex, 'Pass' ) } colour="success" />
+											<AssessmentButton label="Pass" onPress={ () => answerHandler( sectionIndex, questionIndex, 'Pass' ) } colour="success" selected={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.value === 'Pass' } />
 										</GridColumn>
 									</GridRow>
 								)}
+								<View>
+									{assessment?.[sectionIndex]?.answers?.[questionIndex]?.pass ? (<>
+										<Text>Inspection Comment</Text>
+										<TextInput style={ styles.input } placeholder="Inspection comment..." placeholderTextColor={ PLACEHOLDER_TEXT_COLOUR } value={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.notes ?? "" } onChangeText={ (notes) => commentChangeHandler( sectionIndex, questionIndex, notes ) } />
+									</>) : (<>
+										<Text>Fault Comment</Text>
+										<TextInput style={ styles.input } placeholder="Fault comment..." placeholderTextColor={ PLACEHOLDER_TEXT_COLOUR } value={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.notes ?? "" } onChangeText={ (notes) => commentChangeHandler( sectionIndex, questionIndex, notes ) } />
+									</>)}
+								</View>
 							</View>
 						))}
 					</Card>
@@ -171,6 +210,37 @@ const styles = StyleSheet.create({
 		fontSize: 12,
 		color: "rgba(0, 0, 0, 0.5)"
 	},
+	button: {
+		alignItems: "center",
+		justifyContent: "center",
+		paddingVertical: 10,
+		paddingHorizontal: 16,
+		borderRadius: 4,
+		borderWidth: 1,
+		borderColor: "#7863FB",
+	},
+	unselectedButton: {
+		backgroundColor: "transparent",
+	},
+	pressed: {
+		opacity: 0.8,
+	},
+	buttonText: {
+		fontWeight: "bold",
+		textAlign: "center"
+	},
+	selectedText: {
+		color: "#FFFFFF",
+	},
+	unselectedText: {
+		color: "#000000",
+	},
+	input: {
+		padding: 10,
+		borderWidth: 1,
+		borderColor: BRAND_COLOUR_DARK_GREY,
+		borderRadius: 10,
+	}
 })
 
 export default EditInspection
