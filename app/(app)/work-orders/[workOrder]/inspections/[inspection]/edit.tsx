@@ -56,23 +56,59 @@ function EditInspection() {
 	}, [ dbIsReady, currentInspection ]);
 
 	const answerHandler = ( sectionIndex: number, questionIndex: number, value: string ) => {
-		alert( 'Test... ' + `${ sectionIndex } ${ questionIndex } ${ value }` );
+		setAssessment( ( prevAssessment ) => {
+			const newAssessment: InspectionAssessment = prevAssessment
+				? prevAssessment.map( (s) => ({ ...s, answers: s.answers.map(a => ({ ...a })) }) )
+				: [];
 
-		let _assessment = assessment ?? [];
+			// Ensure the section exists
+			while ( newAssessment.length <= sectionIndex ) {
+				newAssessment.push({ answers: [], skipped: false, skipped_comment: null });
+			}
 
-		_assessment[ sectionIndex ].answers[ questionIndex ] = {
-			pass: true,
-			notes: "This is a test",
-			value: value,
-			faults: []
-		};
+			const section = newAssessment[ sectionIndex ];
 
-		setAssessment( _assessment );
+			// Ensure the answers array has the question index
+			while ( section.answers.length <= questionIndex ) {
+				section.answers.push({ pass: false, notes: "", value: "", faults: [] });
+			}
+
+			// Build an InspectionAnswer object matching the type
+			section.answers[ questionIndex ] = {
+				pass: value === 'Pass',
+				notes: "",
+				value,
+				faults: []
+			};
+
+			return newAssessment;
+		} );
 	}
 
 	useEffect(() => {
-		console.log( "Inspection Assessment: ", assessment );
-	}, [ assessment ]);
+		if ( !assessment ) {
+			console.log( "Inspection Assessment: <empty>" );
+			return;
+		}
+
+		try {
+			console.log( "Inspection Assessment (raw):", assessment );
+			console.log( "Inspection Assessment (JSON):\n", JSON.stringify( assessment, null, 2 ) );
+
+			assessment.forEach( ( section, sIndex ) => {
+				console.log( `Section ${sIndex}:`, section );
+				if ( section.answers && section.answers.length ) {
+					section.answers.forEach( ( ans, qIndex ) => {
+						console.log( `Section ${sIndex} • Answer ${qIndex}:`, JSON.stringify( ans, null, 2 ) );
+					} );
+				} else {
+					console.log( `Section ${sIndex} has no answers` );
+				}
+			} );
+		} catch ( e ) {
+			console.log( "Error logging inspection assessment:", e );
+		}
+	}, [ assessment ] );
 
 	if( dbError ) return <Text>Error: { dbError }</Text>;
 	if( !dbIsReady || !db ) return <ActivityIndicator />;
