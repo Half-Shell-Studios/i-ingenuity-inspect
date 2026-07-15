@@ -15,12 +15,12 @@ export interface InspectionTemplateRevision {
 	template: string;
 }
 
-export interface InspectionSection {
+export interface InspectionTemplateSection {
 	name: string;
-	questions: InspectionQuestion[]
+	questions: InspectionTemplateQuestion[]
 }
 
-export interface InspectionQuestion {
+export interface InspectionTemplateQuestion {
 	content: string;
 	id: string;
 	noac: boolean;
