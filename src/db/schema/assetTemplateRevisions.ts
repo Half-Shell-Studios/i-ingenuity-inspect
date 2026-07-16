@@ -1,5 +1,6 @@
 import { assetTagsTable } from "@/src/db/schema/assetTags";
 import { assetTemplatesTable } from "@/src/db/schema/assetTemplates";
+import { CertificateNumber, CustomFields, Metadata, StateComments } from "@/src/types";
 import { relations } from 'drizzle-orm';
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
@@ -14,12 +15,12 @@ export const assetTemplateRevisionsTable = sqliteTable( 'asset_template_revision
 	ipRating: text("ip_rating", { length: 512 }),
 	protection: text("protection", { length: 512 }),
 	serviceLife: integer("service_life").notNull(),
-	certificateNumbers: text("certificate_numbers"), // JSON as text in SQLite
-	customFields: text("custom_fields"), // JSON as text in SQLite
-	metadata: text("metadata"), // JSON as text in SQLite
+	certificateNumbers: text("certificate_numbers", { mode: "json" }).$type<CertificateNumber[] | null>(),
+	customFields: text("custom_fields", { mode: 'json' }).$type<CustomFields | null>(),
+	metadata: text("metadata", { mode: 'json' }).$type<Metadata | null>(),
 	version: text("version", { length: 9 }).default("0.01"),
 	state: text("state", { length: 9 }).notNull(),
-	stateComments: text("state_comments"), // JSON as text
+	stateComments: text("state_comments", { mode: 'json' }).$type<StateComments | null>(),
 	draftedBy: text("drafted_by"),
 	completedAt: integer("completed_at"), // Unix timestamp
 	completedBy: text("completed_by"),
