@@ -8,10 +8,9 @@ import ScrollViewContainer from "@/src/components/ScrollViewContainer";
 import { useWorkOrderDb } from "@/src/context/WorkOrderDbContext";
 import { getAssetTagById } from "@/src/db/queries/assetTags";
 import AssetTag from "@/src/types/AssetTag";
-import { convertNullStrings } from "@/src/utils/helpers";
 import { Image, useImage } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ActivityIndicator, Dimensions, ScrollView, StyleSheet, Text, useWindowDimensions, View } from "react-native";
 
 const { width: screenWidth } = Dimensions.get( 'window' );
@@ -35,13 +34,7 @@ function AssetTagShow() {
 	useEffect(() => {
 		if( dbIsReady ) {
 			(async() => {
-				const newAssetTag = await getAssetTagById( db, assetTagId );
-				const newAssetTagMetadata = convertNullStrings( JSON.parse( newAssetTag.assetTemplate.revisionActive.metadata ) );
-
-				newAssetTag.assetTemplate.revisionActive.metadata = newAssetTagMetadata;
-
-
-				setAssetTag( newAssetTag );
+				setAssetTag( await getAssetTagById( db, assetTagId ) );
 			})();
 		}
 	}, [ db, assetTagId ]);
@@ -100,6 +93,19 @@ function AssetTagShow() {
 							<Text style={ styles.lead }>Classification</Text>
 							<CardTitle title={ `${ assetTag?.assetTemplate?.revisionActive?.classification }` } />
 						</GridColumn>
+						<GridColumn style={ styles.column }>
+							<Text style={ styles.lead }>Certificates</Text>
+							{assetTag?.assetTemplate?.revisionActive?.certificateNumbers?.map(( cert, index ) => {
+								return (
+									<React.Fragment key={ `cert-${ index }` }>
+										<CardTitle title={ cert.number } />
+										{ !!cert?.notes && (
+											<Text>{ cert.notes }</Text>
+										)}
+									</React.Fragment>
+								)
+							})}
+						</GridColumn>
 					</GridRow>
 				</Card>
 				
@@ -115,16 +121,14 @@ function AssetTagShow() {
 						</GridColumn>
 						<GridColumn style={ styles.column }>
 							<Text style={ styles.lead }>Gas Group</Text>
-							<CardTitle title={ `${ assetTag?.assetTemplate?.revisionActive?.metadata?.groups?.gas_group ?? 'Not Set' }` } />
+							<CardTitle title={ `${ assetTag?.assetTemplate?.revisionActive?.metadata?.groups?.gas_group ?? 'Not Set' } ${ assetTag?.assetTemplate?.revisionActive?.metadata?.groups?.gas_temperature_class ?? '' }` } />
 						</GridColumn>
 						<GridColumn style={ styles.column }>
 							<Text style={ styles.lead }>Dust Group</Text>
-							<CardTitle title={ `${ assetTag?.assetTemplate?.revisionActive?.metadata?.groups?.dust_group ?? 'Not Set' }` } />
+							<CardTitle title={ `${ assetTag?.assetTemplate?.revisionActive?.metadata?.groups?.dust_group ?? 'Not Set' } ${ assetTag?.assetTemplate?.revisionActive?.metadata?.groups?.dust_temperature_class ?? '' }` } />
 						</GridColumn>
 					</GridRow>
 				</Card>
-
-				{/* {"groups":{"gas_group":"IIC","gas_temperature_class":"4","gas_temperature_custom":false,"dust_group":"null","dust_temperature_class":"","dust_temperature_custom":false},"protection":[{"extension":"ia","level":"Ga","type":"i","zone":2}],"isf":[]} */}
 			
 				<Card>
 					<View style={{ marginBottom: 20 }}>
