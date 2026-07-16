@@ -1,3 +1,47 @@
+
+interface CustomField {
+	key: string;
+	value: string;
+}
+
+export type CustomFields = CustomField[];
+
+interface ProtectionEntry {
+	type: string;
+	zone: string;
+	level: string;
+	extension: string;
+}
+
+interface MetadataGroups {
+	gas_group: string;
+	dust_group: string;
+	equipment_group: string;
+	gas_temperature_class: string;
+	dust_temperature_class: string;
+	gas_temperature_custom: boolean;
+	dust_temperature_custom: boolean;
+}
+
+export interface Metadata {
+	ip: unknown[];
+	isf: unknown[];
+	groups: MetadataGroups;
+	ip_rating: string | null;
+	protection: ProtectionEntry[];
+}
+
+export interface CertificateNumber {
+	number: string;
+	notes?: string;
+}
+
+export interface StateComments {
+	checked: string | null;
+	approved: string | null;
+	completed: string | null;
+}
+
 export interface AssetTemplateRevision {
 	id: string;
 	assetTemplateId: string;
@@ -9,12 +53,12 @@ export interface AssetTemplateRevision {
 	ipRating: string | null;
 	protection: string | null;
 	serviceLife?: number;
-	certificateNumbers: string | null;
-	customFields: string | null;
-	metadata: string | null;
+	certificateNumbers: CertificateNumber[] | null;
+	customFields: CustomFields | null;
+	metadata: Metadata | null;
 	version: string | null;
 	state: string;
-	stateComments: string | null;
+	stateComments: StateComments | null;
 	draftedBy: string | null;
 	completedAt: number | null;
 	completedBy: string | null;
