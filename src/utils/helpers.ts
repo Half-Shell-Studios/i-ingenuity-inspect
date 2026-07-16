@@ -1,4 +1,4 @@
-type JsonValue = | string | number | boolean | null | JsonValue[] | {[ key: string ]: JsonValue };
+export type JsonValue = | string | number | boolean | null | JsonValue[] | {[ key: string ]: JsonValue };
 
 export function convertNullStrings(value: JsonValue): JsonValue {
 	if( Array.isArray( value ) ) {
