@@ -3,11 +3,13 @@ import CardsContainer from "@/src/components/CardsContainer";
 import CardTitle from "@/src/components/CardTitle";
 import GridColumn from "@/src/components/GridColumn";
 import GridRow from "@/src/components/GridRow";
+import InlineDropdown, { SelectOption } from "@/src/components/InlineSelect";
 import ScreenTitle from "@/src/components/ScreenTitle";
 import ScrollViewContainer from "@/src/components/ScrollViewContainer";
-import { BRAND_COLOUR_DARK_GREY, ERROR_COLOUR, PLACEHOLDER_TEXT_COLOUR, PRIMARY_COLOUR, SUCCESS_COLOUR, WARNING_COLOUR } from "@/src/constants/colours";
+import { BRAND_COLOUR_DARK_GREY, BRAND_COLOUR_WHITE, ERROR_COLOUR, PLACEHOLDER_TEXT_COLOUR, PRIMARY_COLOUR, SUCCESS_COLOUR, WARNING_COLOUR } from "@/src/constants/colours";
 import { useWorkOrderDb } from "@/src/context/WorkOrderDbContext";
 import { getAssetTagById } from "@/src/db/queries/assetTags";
+import { getAllFaultCodes } from "@/src/db/queries/faultCodes";
 import { getInspectionById, getInspectionTemplateByRevisionId } from "@/src/db/queries/inspections";
 import { getUser } from "@/src/db/queries/users";
 import { AssetTag, Inspection, InspectionAnswer, InspectionAssessment, InspectionTemplateQuestion, InspectionTemplateSection, User } from "@/src/types";
@@ -38,6 +40,22 @@ function EditInspection() {
 	const [ inspectionTemplate, setInspectionTemplate ] = useState<[]>();
 	const [ inspectedTag, setInspectedTag ] = useState<AssetTag>();
 	const [ assessment, setAssessment ] = useState<InspectionAssessment>();
+	const [ faultCodes, setFaultCodes ] = useState<SelectOption[]>();
+
+	useEffect(() => {
+		if( dbIsReady ) {
+			(async () => {
+				const allFaultCodes = await getAllFaultCodes( db );
+
+				const faultCodesAsOptions = allFaultCodes.map( faultCode => ({
+					label: faultCode.name,
+					value: faultCode.id
+				}))
+
+				setFaultCodes( faultCodesAsOptions );
+			})();
+		}
+	}, [ dbIsReady ])
 
 	useEffect(() => {
 		if( dbIsReady ) {
@@ -188,12 +206,25 @@ function EditInspection() {
 									</GridRow>
 								)}
 								<View>
-									{assessment?.[sectionIndex]?.answers?.[questionIndex]?.pass ? (<>
-										<Text>Inspection Comment</Text>
+									<View style={{ marginBottom: 10 }}>
+										<Text style={{ marginBottom: 5 }}>Notes</Text>
 										<TextInput style={ styles.input } placeholder="Inspection comment..." placeholderTextColor={ PLACEHOLDER_TEXT_COLOUR } value={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.notes ?? "" } onChangeText={ (notes) => commentChangeHandler( sectionIndex, questionIndex, notes ) } />
-									</>) : (<>
-										<Text>Fault Comment</Text>
-										<TextInput style={ styles.input } placeholder="Fault comment..." placeholderTextColor={ PLACEHOLDER_TEXT_COLOUR } value={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.notes ?? "" } onChangeText={ (notes) => commentChangeHandler( sectionIndex, questionIndex, notes ) } />
+									</View>
+									
+									{ !( assessment?.[sectionIndex]?.answers?.[questionIndex]?.pass ?? true ) && (<>
+										<GridRow style={{ marginInline: -10 }}>
+											<GridColumn style={{ flexGrow: 0, flexShrink: 1, width: '25%', paddingInline: 10 }}>
+												<Text>Fault Code</Text>
+												{/* <TextInput style={ styles.input } placeholder="Inspection comment..." placeholderTextColor={ PLACEHOLDER_TEXT_COLOUR } value={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.notes ?? "" } onChangeText={ (notes) => commentChangeHandler( sectionIndex, questionIndex, notes ) } /> */}
+												{!!faultCodes && !!faultCodes?.length && (
+													<InlineDropdown options={ faultCodes } onChange={ value => console.log( value ) } />
+												)}
+											</GridColumn>
+											<GridColumn style={{ flexGrow: 1, flexShrink: 1, width: '75%', paddingInline: 10 }}>
+												<Text>Fault Comment</Text>
+												<TextInput style={ styles.input } placeholder="Inspection comment..." placeholderTextColor={ PLACEHOLDER_TEXT_COLOUR } value={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.notes ?? "" } onChangeText={ (notes) => commentChangeHandler( sectionIndex, questionIndex, notes ) } />
+											</GridColumn>
+										</GridRow>
 									</>)}
 								</View>
 							</View>
@@ -240,6 +271,7 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		borderColor: BRAND_COLOUR_DARK_GREY,
 		borderRadius: 10,
+		backgroundColor: BRAND_COLOUR_WHITE
 	}
 })
 
