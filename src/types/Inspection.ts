@@ -35,7 +35,7 @@ export interface Inspection {
 	inspectionTypeId: string;
 	locationId: string;
 	name: string;
-	assessment: InspectionAnswers[];
+	assessment: InspectionAssessment;
 	notes: string | null;
 	inspectedBy: string;
 	inspectionTemplate?: InspectionTemplate;

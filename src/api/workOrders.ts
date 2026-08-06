@@ -71,6 +71,20 @@ export async function deleteLocalDb( uuid: string ): Promise<void> {
 	debugSqliteDir();
 }
 
+export async function deleteAllLocalDbs(): Promise<void> {
+	if( !sqliteDir.exists ) return;
+
+	for( const entry of sqliteDir.list() ) {
+		if( entry instanceof File ) {
+			entry.delete();
+			console.log( `Deleted local file ${ entry.name }` );
+		} else {
+			entry.delete();
+			console.log( `Deleted local directory ${ entry.name }` );
+		}
+	}
+}
+
 export function debugSqliteDir(): void {
 	if( !sqliteDir.exists ) {
 		console.log( "SQLite directory does not exist." );

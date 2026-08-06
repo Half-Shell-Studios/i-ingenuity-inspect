@@ -31,6 +31,24 @@ export async function createNewInspection( db: AppDatabase | null, data: Omit<In
 	return await db.insert( inspectionsTable ).values( data ).returning({ insertedId: inspectionsTable.id });
 }
 
+export async function updateInspection( db: AppDatabase | null, id: string, data: Partial<Omit<Inspection, "id">> ) {
+	if( !db ) throw new Error( 'Database not initialised' );
+
+	await db.update( inspectionsTable ).set( data ).where(
+		eq( inspectionsTable.id, id )
+	).run();
+
+	return db.query.inspectionsTable.findFirst({
+		where: eq( inspectionsTable.id, id ),
+		with: {
+			assetTag: true,
+			inspectionType: true,
+			inspectionTemplate: true,
+			inspectedByUser: true,
+		},
+	});
+}
+
 export async function getAllInspectionTypes( db: AppDatabase | null ) {
 	if( !db ) throw new Error( 'Database not initialised' );
 

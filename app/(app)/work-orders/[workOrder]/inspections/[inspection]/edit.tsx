@@ -11,7 +11,7 @@ import { BRAND_COLOUR_DARK_GREY, BRAND_COLOUR_WHITE, ERROR_COLOUR, PLACEHOLDER_T
 import { useWorkOrderDb } from "@/src/context/WorkOrderDbContext";
 import { getAssetTagById } from "@/src/db/queries/assetTags";
 import { getAllFaultCodes } from "@/src/db/queries/faultCodes";
-import { getInspectionById, getInspectionTemplateByRevisionId } from "@/src/db/queries/inspections";
+import { getInspectionById, getInspectionTemplateByRevisionId, updateInspection } from "@/src/db/queries/inspections";
 import { getUser } from "@/src/db/queries/users";
 import { AssetTag, Inspection, InspectionAnswer, InspectionAssessment, InspectionTemplateQuestion, InspectionTemplateSection, User } from "@/src/types";
 import { useLocalSearchParams } from "expo-router";
@@ -34,7 +34,7 @@ function AssessmentButton({ label, onPress, colour = 'primary', selected = false
 }
 
 function EditInspection() {
-	const { inspection }: { inspection: string } = useLocalSearchParams();
+	const { inspection }: { inspection: Inspection[ 'id' ] } = useLocalSearchParams();
 	const { isReady: dbIsReady, error: dbError, db } = useWorkOrderDb();
 	const [ currentInspection, setCurrentInspection ] = useState<Inspection>();
 	const [ inspectedBy, setInspectedBy ] = useState<User>();
@@ -134,30 +134,76 @@ function EditInspection() {
 		setAnswer( sectionIndex, questionIndex, { notes } );
 	}
 
-	useEffect(() => {
-		if( !assessment ) {
-			console.log( "Inspection Assessment: <empty>" );
-			return;
+	const skipCommentChangeHandler = ( sectionIndex: number, notes: string ) => {
+		setAssessment( prevAssessment => {
+			const newAssessment: InspectionAssessment = prevAssessment ? prevAssessment.map(s => ({ ...s, answers: s.answers.map(a => ({ ...a })) }) ) : [];
+
+			while( newAssessment.length <= sectionIndex ) {
+				newAssessment.push({
+					answers: [],
+					skipped: false,
+					skipped_comment: null
+				});
+			}
+
+			newAssessment[ sectionIndex ].skipped_comment = notes;
+
+			return newAssessment;
+		});
+	}
+
+	const toggleSkipSection = ( sectionIndex: number ) => {
+		setAssessment( prevAssessment => {
+			const newAssessment: InspectionAssessment = prevAssessment ? prevAssessment.map(s => ({ ...s, answers: s.answers.map(a => ({ ...a })) }) ) : [];
+
+			while( newAssessment.length <= sectionIndex ) {
+				newAssessment.push({
+					answers: [],
+					skipped: false,
+					skipped_comment: null
+				});
+			}
+
+			const section = newAssessment[ sectionIndex ];
+			section.skipped = !section.skipped;
+
+			if( section.skipped && section.skipped_comment == null ) {
+				section.skipped_comment = null;
+			}
+
+			return newAssessment;
+		});
+	}
+
+	const handleSubmit = async () => {
+		if( !currentInspection ) return;
+
+		const newInspection: Partial<Omit<Inspection, 'id'>> = {
+			...currentInspection,
+			assessment: assessment
 		}
 
-		try {
-			console.log( "Inspection Assessment (raw):", assessment );
-			console.log( "Inspection Assessment (JSON):\n", JSON.stringify( assessment, null, 2 ) );
+		if( dbIsReady ) {
+			try {
+				const returnedInspection: Inspection | undefined = await updateInspection( db, inspection, newInspection );
 
-			assessment.forEach( ( section, sIndex ) => {
-				console.log( `Section ${sIndex}:`, section );
-				if( section.answers && section.answers.length ) {
-					section.answers.forEach(( ans, qIndex ) => {
-						console.log( `Section ${sIndex} • Answer ${qIndex}:`, JSON.stringify( ans, null, 2 ) );
-					});
-				} else {
-					console.log( `Section ${sIndex} has no answers` );
-				}
-			} );
-		} catch ( e ) {
-			console.log( "Error logging inspection assessment:", e );
+				// console.log( "returned inspection ID:", returnedInspection );
+
+				setCurrentInspection( returnedInspection )
+
+				// if( !!returnedInspection ) {
+				// 	(async () => (
+				// 		setCurrentInspection( await getInspectionById( db, inspection ) )
+				// 	))();
+				// }
+			} catch ( error ) {
+				console.error( "Failed to update inspection", error );
+			} finally {
+				console.log( "currentInspection:", currentInspection );
+			}
 		}
-	}, [ assessment ] );
+
+	}
 
 	if( dbError ) return <Text>Error: { dbError }</Text>;
 	if( !dbIsReady || !db ) return <ActivityIndicator />;
@@ -171,71 +217,92 @@ function EditInspection() {
 				<Text>{ inspectedBy?.name }</Text>
 			</View>
 			<CardsContainer>
-				{ inspectionTemplate?.map(( templateSection: InspectionTemplateSection, sectionIndex: number ) => (
-					<Card key={ templateSection?.name }>
-						<View style={{ marginBottom: 10 }}>
-							<CardTitle title={ templateSection?.name } />
-						</View>
-
-						{ templateSection.questions.map(( question: InspectionTemplateQuestion, questionIndex: number ) => (
-							<View key={ question.id } style={{ marginBottom: 20 }}>
-								<GridRow style={{ marginInline: -10, marginBottom: 10, flexWrap: 'nowrap' }}>
-									<GridColumn style={{ flexGrow: 0, minWidth: 0, marginInline: 10 }}>
-										<Text style={{ fontWeight: 600 }}>{ question.id.trim() }</Text>
+				{ inspectionTemplate?.map(( templateSection: InspectionTemplateSection, sectionIndex: number ) => {
+					return (
+						<Card key={ templateSection?.name }>
+							<View style={{ marginBottom: 10 }}>
+								<GridRow style={{ alignItems: 'center', justifyContent: 'space-between' }}>
+									<GridColumn>
+										<CardTitle title={ templateSection?.name } />
 									</GridColumn>
-									<GridColumn style={{ flexGrow: 1, minWidth: 0, marginInline: 10 }}>
-										<Text>{ question.content.trim() }</Text>
+									<GridColumn>
+										<Pressable onPress={() => toggleSkipSection( sectionIndex )}>
+											<Text style={{ padding: 5 }}>{ !!assessment && ( assessment[ sectionIndex ]?.skipped ?? false ) ? 'Open' : 'Skip' }</Text>
+										</Pressable>
 									</GridColumn>
 								</GridRow>
-								{ question.type === 'preset-buttons' && (
-									<ScrollView horizontal>
-										<GridRow style={{ minWidth: '100%', marginInline: -10, marginBottom: 10 }}>
-											<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
-												<AssessmentButton label="Fail" onPress={ () => answerHandler( sectionIndex, questionIndex, 'Fail' ) } colour="error" selected={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.value === 'Fail' } />
-											</GridColumn>
-											<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
-												<AssessmentButton label="Not Accessible" onPress={ () => answerHandler( sectionIndex, questionIndex, 'Not Accessible' ) } colour="warning" selected={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.value === 'Not Accessible' } />
-											</GridColumn>
-											<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
-												<AssessmentButton label="Not Applicable" onPress={ () => answerHandler( sectionIndex, questionIndex, 'Not Applicable' ) } colour="warning" selected={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.value === 'Not Applicable' } />
-											</GridColumn>
-											<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
-												<AssessmentButton label="Not Examined" onPress={ () => answerHandler( sectionIndex, questionIndex, 'Not Examined' ) } colour="warning" selected={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.value === 'Not Examined' } />
-											</GridColumn>
-											<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
-												<AssessmentButton label="Pass" onPress={ () => answerHandler( sectionIndex, questionIndex, 'Pass' ) } colour="success" selected={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.value === 'Pass' } />
-											</GridColumn>
-										</GridRow>
-									</ScrollView>
-								)}
-								<View>
-									<View style={{ marginBottom: 10 }}>
-										<Text style={{ marginBottom: 5 }}>Notes</Text>
-										<TextInput style={ styles.input } placeholder="Inspection comment..." placeholderTextColor={ PLACEHOLDER_TEXT_COLOUR } value={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.notes ?? "" } onChangeText={ (notes) => commentChangeHandler( sectionIndex, questionIndex, notes ) } />
-									</View>
-									
-									{ !( assessment?.[sectionIndex]?.answers?.[questionIndex]?.pass ?? true ) && (<>
-										<GridRow style={{ marginInline: -10 }}>
-											<GridColumn style={{ flexGrow: 0, flexShrink: 1, width: '25%', paddingInline: 10 }}>
-												<Text>Fault Code</Text>
-												{/* <TextInput style={ styles.input } placeholder="Inspection comment..." placeholderTextColor={ PLACEHOLDER_TEXT_COLOUR } value={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.notes ?? "" } onChangeText={ (notes) => commentChangeHandler( sectionIndex, questionIndex, notes ) } /> */}
-												{!!faultCodes && !!faultCodes?.length && (
-													<InlineDropdown options={ faultCodes } onChange={ value => console.log( value ) } />
-												)}
-											</GridColumn>
-											<GridColumn style={{ flexGrow: 1, flexShrink: 1, width: '75%', paddingInline: 10 }}>
-												<Text>Fault Comment</Text>
-												<TextInput style={ styles.input } placeholder="Inspection comment..." placeholderTextColor={ PLACEHOLDER_TEXT_COLOUR } value={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.notes ?? "" } onChangeText={ (notes) => commentChangeHandler( sectionIndex, questionIndex, notes ) } />
-											</GridColumn>
-										</GridRow>
-									</>)}
-								</View>
 							</View>
-						))}
-					</Card>
-				))}
+
+							{ !!assessment && assessment[ sectionIndex ]?.skipped ? (
+								<GridRow style={{ marginInline: -10 }}>
+									<GridColumn style={{ flexGrow: 1, flexShrink: 1, width: '75%', paddingInline: 10 }}>
+										<Text>Skipped Comment</Text>
+										<TextInput style={ styles.input } placeholder="Skipped comment..." placeholderTextColor={ PLACEHOLDER_TEXT_COLOUR } value={ assessment?.[sectionIndex]?.skipped_comment ?? "" } onChangeText={ (notes) => skipCommentChangeHandler( sectionIndex, notes ) } />
+									</GridColumn>
+								</GridRow>
+							) : (
+
+								templateSection.questions.map(( question: InspectionTemplateQuestion, questionIndex: number ) => (
+									<View key={ question.id } style={{ marginBottom: 20 }}>
+										<GridRow style={{ marginInline: -10, marginBottom: 10, flexWrap: 'nowrap' }}>
+											<GridColumn style={{ flexGrow: 0, minWidth: 0, marginInline: 10 }}>
+												<Text style={{ fontWeight: 600 }}>{ question.id.trim() }</Text>
+											</GridColumn>
+											<GridColumn style={{ flexGrow: 1, minWidth: 0, marginInline: 10 }}>
+												<Text>{ question.content.trim() }</Text>
+											</GridColumn>
+										</GridRow>
+										{ question.type === 'preset-buttons' && (
+											<ScrollView horizontal>
+												<GridRow style={{ minWidth: '100%', marginInline: -10, marginBottom: 10 }}>
+													<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
+														<AssessmentButton label="Fail" onPress={ () => answerHandler( sectionIndex, questionIndex, 'Fail' ) } colour="error" selected={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.value === 'Fail' } />
+													</GridColumn>
+													<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
+														<AssessmentButton label="Not Accessible" onPress={ () => answerHandler( sectionIndex, questionIndex, 'Not Accessible' ) } colour="warning" selected={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.value === 'Not Accessible' } />
+													</GridColumn>
+													<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
+														<AssessmentButton label="Not Applicable" onPress={ () => answerHandler( sectionIndex, questionIndex, 'Not Applicable' ) } colour="warning" selected={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.value === 'Not Applicable' } />
+													</GridColumn>
+													<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
+														<AssessmentButton label="Not Examined" onPress={ () => answerHandler( sectionIndex, questionIndex, 'Not Examined' ) } colour="warning" selected={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.value === 'Not Examined' } />
+													</GridColumn>
+													<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
+														<AssessmentButton label="Pass" onPress={ () => answerHandler( sectionIndex, questionIndex, 'Pass' ) } colour="success" selected={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.value === 'Pass' } />
+													</GridColumn>
+												</GridRow>
+											</ScrollView>
+										)}
+										<View>
+											<View style={{ marginBottom: 10 }}>
+												<Text style={{ marginBottom: 5 }}>Notes</Text>
+												<TextInput style={ styles.input } placeholder="Inspection comment..." placeholderTextColor={ PLACEHOLDER_TEXT_COLOUR } value={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.notes ?? "" } onChangeText={ (notes) => commentChangeHandler( sectionIndex, questionIndex, notes ) } />
+											</View>
+											
+											{ !( assessment?.[sectionIndex]?.answers?.[questionIndex]?.pass ?? true ) && (<>
+												<GridRow style={{ marginInline: -10 }}>
+													<GridColumn style={{ flexGrow: 0, flexShrink: 1, width: '25%', paddingInline: 10 }}>
+														<Text>Fault Code</Text>
+														{/* <TextInput style={ styles.input } placeholder="Inspection comment..." placeholderTextColor={ PLACEHOLDER_TEXT_COLOUR } value={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.notes ?? "" } onChangeText={ (notes) => commentChangeHandler( sectionIndex, questionIndex, notes ) } /> */}
+														{!!faultCodes && !!faultCodes?.length && (
+															<InlineDropdown options={ faultCodes } onChange={ value => console.log( value ) } />
+														)}
+													</GridColumn>
+													<GridColumn style={{ flexGrow: 1, flexShrink: 1, width: '75%', paddingInline: 10 }}>
+														<Text>Fault Comment</Text>
+														<TextInput style={ styles.input } placeholder="Inspection comment..." placeholderTextColor={ PLACEHOLDER_TEXT_COLOUR } value={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.notes ?? "" } onChangeText={ (notes) => commentChangeHandler( sectionIndex, questionIndex, notes ) } />
+													</GridColumn>
+												</GridRow>
+											</>)}
+										</View>
+									</View>
+								))
+							)}
+						</Card>
+					)
+				})}
 			</CardsContainer>
-			<TouchableOpacityButton label="Save" pressHandler={() => false} />
+			<TouchableOpacityButton label="Save" pressHandler={ handleSubmit } />
 		</ScrollViewContainer>
 	)
 }
