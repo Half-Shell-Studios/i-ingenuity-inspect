@@ -1,7 +1,8 @@
 import type { User } from "@/src/types/User";
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import client from "../api/client";
-import { getToken, removeLastRoute, removeToken, setToken } from "../utils/storage";
+import { deleteAllLocalDbs } from "../api/workOrders";
+import { getToken, removeActiveWorkOrderUuid, removeLastRoute, removeToken, setToken } from "../utils/storage";
 
 type AuthContextType = {
 	user: User | null;
@@ -56,8 +57,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		} catch {
 			// token may already be invalid
 		} finally {
+			await deleteAllLocalDbs();
 			await removeToken();
 			await removeLastRoute();
+			await removeActiveWorkOrderUuid();
 			setUser( null );
 			setIsAuthenticated( false );
 		}
