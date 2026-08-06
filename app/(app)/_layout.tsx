@@ -1,8 +1,11 @@
+import DashboardIcon from '@/assets/icons/dashboard.svg';
+import SettingsIcon from '@/assets/icons/settings.svg';
+import WorkOrderIcon from '@/assets/icons/work-orders.svg';
+import { ACCENT_COLOUR } from '@/src/constants/colours';
 import { setLastRoute } from '@/src/utils/storage';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { Stack, usePathname, useRouter } from 'expo-router';
+import { Tabs, usePathname } from 'expo-router';
+import { getFocusedRouteNameFromRoute } from 'expo-router/build/react-navigation';
 import { useEffect } from 'react';
-import { Pressable, Text, View } from 'react-native';
 
 export function stackOptions( defaultTitle: string ) {
 	return {
@@ -14,12 +17,11 @@ export function stackOptions( defaultTitle: string ) {
 export function tabOptions( defaultTitle: string ) {
 	return {
 		...stackOptions( defaultTitle ),
-		tabBarActiveTintColor: "#7863FB",
+		tabBarActiveTintColor: ACCENT_COLOUR,
 	}
 }
 
 export default function AppLayout() {
-	const router = useRouter();
 	const pathname = usePathname();
 
 	useEffect(() => {
@@ -29,28 +31,32 @@ export default function AppLayout() {
 		}
 	}, [pathname]);
 
-	const BackButton = () => (
-		<Pressable onPress={() => router.replace( '/work-orders' )} hitSlop={ 10 }>
-			<View style={{ flexDirection: 'row', alignItems: 'center', columnGap: 6 }}>
-				<Ionicons name="chevron-back" size={ 24 } color="#000" /><Text>Dashboard</Text>
-			</View>
-		</Pressable>
-	);
-
-	return (
-		<Stack screenOptions={{ headerBackVisible: false }}>
-			<Stack.Screen name="dashboard" options={{
-				title: "Dashboard",
-			}} />
-			<Stack.Screen name="work-orders/index" options={{
-				title: "Work Orders"
-			}} />
-			<Stack.Screen name="work-orders/[workOrder]" options={{
-				title: 'Work Order Details',
+	return (<>
+		<Tabs screenOptions={{ headerShown: false }}>
+			<Tabs.Screen name="dashboard" options={{
+				...tabOptions( 'Dashboard' ),
 				headerShown: true,
-				headerLeft: () => <BackButton />,
-				headerBackVisible: false
+				tabBarIcon: ({ color, size }) => (
+					<DashboardIcon width={ size } height={ size } stroke={ color } />
+				),
 			}} />
-		</Stack>
-	);
+			<Tabs.Screen name="work-orders" options={({ route }) => {
+				const focused = getFocusedRouteNameFromRoute( route ) ?? "index";
+				return {
+					...tabOptions( 'Work Orders' ),
+					tabBarStyle: focused === "[workOrder]" ? { display: "none" } : undefined,
+					tabBarIcon: ({ color, size }) => (
+						<WorkOrderIcon width={ size } height={ size } stroke={ color } />
+					),
+				};
+			}} />
+			<Tabs.Screen name="settings" options={{
+				...tabOptions( 'Settings' ),
+				headerShown: true,
+				tabBarIcon: ({ color, size }) => (
+					<SettingsIcon width={ size } height={ size } stroke={ color } />
+				),
+			}} />
+		</Tabs>
+	</>);
 }
