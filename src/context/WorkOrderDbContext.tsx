@@ -1,7 +1,8 @@
-import { dbExists, downloadWorkOrdersDb } from "@/src/api/workOrders";
+import { dbExists, deleteAllLocalDbs, downloadWorkOrdersDb } from "@/src/api/workOrders";
 import { openDb, type AppDatabase } from "@/src/db";
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { getActiveWorkOrderUuid, removeActiveWorkOrderUuid, setActiveWorkOrderUuid } from "../utils/storage";
+import { useAuth } from "./AuthContext";
 
 interface WorkOrderDbState {
 	isReady: boolean;
@@ -28,6 +29,7 @@ export function useWorkOrderDb() {
 }
 
 export function WorkOrderDbProvider({ children }: { children: ReactNode }) {
+	const { isAuthenticated, isLoading } = useAuth();
 	const [ isReady, setIsReady ] = useState( false );
 	const [ error, setError ] = useState<string | null>( null );
 	const [ db, setDb ] = useState<AppDatabase | null>( null );
@@ -85,8 +87,25 @@ export function WorkOrderDbProvider({ children }: { children: ReactNode }) {
 		}
 	}, [ activeWorkOrderId, openWorkOrder ]);
 
-	// Restore previous session on mount
 	useEffect(() => {
+		if( isLoading ) return;
+
+		if( !isAuthenticated ) {
+			void ( async () => {
+				await closeExisting();
+				setActiveWorkOrderId( null );
+				setIsReady( false );
+				setError( null );
+
+				try {
+					await deleteAllLocalDbs();
+				} catch ( cleanupError ) {
+					console.warn( "Failed to delete local work order database on logout", cleanupError );
+				}
+			})();
+			return;
+		}
+
 		let cancelled = false;
 
 		getActiveWorkOrderUuid().then( uuid => {
@@ -98,7 +117,7 @@ export function WorkOrderDbProvider({ children }: { children: ReactNode }) {
 			cancelled = true;
 		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+	}, [ activeWorkOrderId, isAuthenticated, isLoading, openWorkOrder ]);
 	
 	return (
 		<WorkOrderDbContext.Provider value={{ isReady, error, db, activeWorkOrderId, openWorkOrder, closeWorkOrder, refresh, }}>
