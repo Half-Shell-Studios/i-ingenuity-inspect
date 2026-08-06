@@ -6,6 +6,7 @@ import GridRow from "@/src/components/GridRow";
 import InlineDropdown, { SelectOption } from "@/src/components/InlineSelect";
 import ScreenTitle from "@/src/components/ScreenTitle";
 import ScrollViewContainer from "@/src/components/ScrollViewContainer";
+import TouchableOpacityButton from "@/src/components/TouchableOpacityButton";
 import { BRAND_COLOUR_DARK_GREY, BRAND_COLOUR_WHITE, ERROR_COLOUR, PLACEHOLDER_TEXT_COLOUR, PRIMARY_COLOUR, SUCCESS_COLOUR, WARNING_COLOUR } from "@/src/constants/colours";
 import { useWorkOrderDb } from "@/src/context/WorkOrderDbContext";
 import { getAssetTagById } from "@/src/db/queries/assetTags";
@@ -15,7 +16,7 @@ import { getUser } from "@/src/db/queries/users";
 import { AssetTag, Inspection, InspectionAnswer, InspectionAssessment, InspectionTemplateQuestion, InspectionTemplateSection, User } from "@/src/types";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 const assessmentButtonColourMap: Record<'primary' | 'error' | 'success' | 'warning', string> = {
 	primary: PRIMARY_COLOUR,
@@ -187,23 +188,25 @@ function EditInspection() {
 									</GridColumn>
 								</GridRow>
 								{ question.type === 'preset-buttons' && (
-									<GridRow style={{ marginInline: -10, marginBottom: 10 }}>
-										<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
-											<AssessmentButton label="Fail" onPress={ () => answerHandler( sectionIndex, questionIndex, 'Fail' ) } colour="error" selected={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.value === 'Fail' } />
-										</GridColumn>
-										<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
-											<AssessmentButton label="Not Accessible" onPress={ () => answerHandler( sectionIndex, questionIndex, 'Not Accessible' ) } colour="warning" selected={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.value === 'Not Accessible' } />
-										</GridColumn>
-										<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
-											<AssessmentButton label="Not Applicable" onPress={ () => answerHandler( sectionIndex, questionIndex, 'Not Applicable' ) } colour="warning" selected={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.value === 'Not Applicable' } />
-										</GridColumn>
-										<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
-											<AssessmentButton label="Not Examined" onPress={ () => answerHandler( sectionIndex, questionIndex, 'Not Examined' ) } colour="warning" selected={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.value === 'Not Examined' } />
-										</GridColumn>
-										<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
-											<AssessmentButton label="Pass" onPress={ () => answerHandler( sectionIndex, questionIndex, 'Pass' ) } colour="success" selected={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.value === 'Pass' } />
-										</GridColumn>
-									</GridRow>
+									<ScrollView horizontal>
+										<GridRow style={{ minWidth: '100%', marginInline: -10, marginBottom: 10 }}>
+											<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
+												<AssessmentButton label="Fail" onPress={ () => answerHandler( sectionIndex, questionIndex, 'Fail' ) } colour="error" selected={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.value === 'Fail' } />
+											</GridColumn>
+											<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
+												<AssessmentButton label="Not Accessible" onPress={ () => answerHandler( sectionIndex, questionIndex, 'Not Accessible' ) } colour="warning" selected={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.value === 'Not Accessible' } />
+											</GridColumn>
+											<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
+												<AssessmentButton label="Not Applicable" onPress={ () => answerHandler( sectionIndex, questionIndex, 'Not Applicable' ) } colour="warning" selected={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.value === 'Not Applicable' } />
+											</GridColumn>
+											<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
+												<AssessmentButton label="Not Examined" onPress={ () => answerHandler( sectionIndex, questionIndex, 'Not Examined' ) } colour="warning" selected={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.value === 'Not Examined' } />
+											</GridColumn>
+											<GridColumn style={{ flexGrow: 1, marginInline: 10 }}>
+												<AssessmentButton label="Pass" onPress={ () => answerHandler( sectionIndex, questionIndex, 'Pass' ) } colour="success" selected={ assessment?.[sectionIndex]?.answers?.[questionIndex]?.value === 'Pass' } />
+											</GridColumn>
+										</GridRow>
+									</ScrollView>
 								)}
 								<View>
 									<View style={{ marginBottom: 10 }}>
@@ -232,6 +235,7 @@ function EditInspection() {
 					</Card>
 				))}
 			</CardsContainer>
+			<TouchableOpacityButton label="Save" pressHandler={() => false} />
 		</ScrollViewContainer>
 	)
 }
