@@ -1,50 +1,120 @@
-# Welcome to your Expo app 👋
+# I-Ingenuity Inspect
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Expo / React Native field app for inspections and work orders. It talks to the I-Ingenuity Laravel API and stores downloaded work-order data in on-device SQLite.
 
-## Get started
+This repo is **not** the API. Docker, MySQL, Redis, and Mailhog live in [`i-ingenuity-3`](../i-ingenuity-3).
 
-1. Install dependencies
+Native modules (`expo-sqlite`, `expo-secure-store`, `react-native-pdf-renderer`, `expo-dev-client`) mean you need a **development build**. Expo Go will not run this app.
 
-   ```bash
-   npm install
-   ```
+## Prerequisites
 
-2. Start the app
+- Node.js 20+
+- Xcode (iOS simulator) and/or Android Studio
+- Docker, with the API stack running (see below)
 
-   ```bash
-   npx expo start
-   ```
+## 1. Start the API
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+From the API repo:
 
 ```bash
-npm run reset-project
+cd ~/PhpstormProjects/i-ingenuity-3
+docker compose up -d
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+On this machine the published ports are:
 
-## Learn more
+| Service | URL |
+| --- | --- |
+| API / web | http://localhost:8130 |
+| Mailhog | http://localhost:8132 |
 
-To learn more about developing your project with Expo, look at the following resources:
+Seed once if you need a login:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+docker compose exec app php artisan db:seed
+```
 
-## Join the community
+Default account: `support@i-ingenuity.com` / `Password123!`
 
-Join our community of developers creating universal apps.
+Password-reset and other outbound mail from the API show up in Mailhog. Follow the Local development section in `i-ingenuity-3/README.md` if the stack is not up yet.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## 2. Configure this app
+
+```bash
+cd ~/PhpstormProjects/i-ingenuity-inspect
+cp .env.example .env
+```
+
+Edit `.env` if needed. Restart Metro after changing it.
+
+| Variable | Purpose |
+| --- | --- |
+| `EXPO_PUBLIC_API_URL` | Axios base URL (example: `http://localhost:8130/api/v1`) |
+| `EXPO_PUBLIC_DEV_USER` | Optional. Prefills the login email |
+| `EXPO_PUBLIC_DEV_USER_PASS` | Optional. Prefills the login password |
+
+| Client | `EXPO_PUBLIC_API_URL` |
+| --- | --- |
+| iOS simulator / Android emulator | `http://localhost:8130/api/v1` |
+| Physical device on the same LAN | `http://<your-mac-lan-ip>:8130/api/v1` |
+| Shared beta API | `https://beta.i-ingenuity.com/api/v1` |
+
+## 3. Install and run
+
+```bash
+npm install
+```
+
+First time on a machine, build and install the native dev client:
+
+```bash
+npx expo run:ios
+# or
+npx expo run:android
+```
+
+That compiles **I-Ingenuity**, installs it on the simulator/emulator, and starts Metro. After that, day to day is:
+
+```bash
+npx expo start
+```
+
+Then open the **I-Ingenuity** app (not Expo Go).
+
+`npx expo start` only starts the JS bundler. Pressing `i` will fall back to Expo Go if no development build is installed, and this project will not load there.
+
+### Simulator
+
+Use the **iPhone 16 Pro** (or whichever device `expo run:ios` booted). Ignore **iPhone 15 Pro — External Display** if it appears; that window is a blank extra screen. Turn it off with **I/O → External Displays → Off**.
+
+On first open you may see **I-Ingenuity Development Build** with a green server and **Open in 'I-Ingenuity'?** Tap **Open**, or tap the green **I-Ingenuity** row.
+
+### Physical iPhone
+
+The simulator binary cannot be copied onto a real phone. Plug the phone in, enable Developer Mode, tap Trust, stay on the same Wi-Fi as the Mac, keep Metro running, then:
+
+```bash
+npx expo run:ios --device
+```
+
+Open **I-Ingenuity**, not Expo Go. Point `EXPO_PUBLIC_API_URL` at the Mac’s LAN IP, not `localhost`.
+
+## Scripts
+
+| Command | What it does |
+| --- | --- |
+| `npm start` | Metro / Expo dev server |
+| `npm run ios` | Build and launch the iOS dev client |
+| `npm run android` | Build and launch the Android dev client |
+| `npm run web` | Expo web (limited; this app is built for native) |
+| `npm run lint` | ESLint |
+
+Rebuild with `npx expo run:ios` / `run:android` when native code changes (new native module, `app.json` plugin, or a clean machine). JS-only work is Metro plus Fast Refresh.
+
+## Day to day
+
+1. `docker compose up -d` in `i-ingenuity-3` if the API is down
+2. `npx expo start` in this repo
+3. Open **I-Ingenuity** on the simulator
+4. Log in with the seeded user (or whatever you put in `.env`)
+5. Check Mailhog at http://localhost:8132 if you trigger mail from the API

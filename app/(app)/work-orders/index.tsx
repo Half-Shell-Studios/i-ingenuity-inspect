@@ -15,7 +15,7 @@ import { ActivityIndicator, Alert, StyleSheet, Text, TouchableOpacity, View } fr
 function WorkOrdersIndex() {
 	const router = useRouter();
 	const { user } = useAuth();
-	const { openWorkOrder } = useWorkOrderDb();
+	const { openWorkOrder, closeWorkOrder, activeWorkOrderId } = useWorkOrderDb();
 	const [ workOrders, setWorkOrders ] = useState<WorkOrder[]>([]);
 	const [ loading, setLoading ] = useState(true);
 	const [ downloading, setDownloading ] = useState<string | null>(null);
@@ -60,7 +60,12 @@ function WorkOrdersIndex() {
 			style: 'cancel',
 		}, {
 			text: 'OK',
-			onPress: async () => await deleteLocalDb( workOrder.id )
+			onPress: async () => {
+				if( activeWorkOrderId === workOrder.id ) {
+					await closeWorkOrder();
+				}
+				await deleteLocalDb( workOrder.id );
+			}
 		}]);
 	}
 

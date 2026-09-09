@@ -12,8 +12,8 @@ export default function InspectionsLayout() {
 			<Stack.Screen name="[inspection]" options={{
 				title: "Inspection Details"
 			}} />
-			<Stack.Screen name="[inspection]/edit" options={{
-				title: "Inspection Details"
+			<Stack.Screen name="edit" options={{
+				title: "Edit Inspection"
 			}} />
 		</Stack>
 	);

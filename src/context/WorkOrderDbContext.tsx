@@ -1,4 +1,4 @@
-import { dbExists, deleteAllLocalDbs, downloadWorkOrdersDb } from "@/src/api/workOrders";
+import { deleteAllLocalDbs, downloadWorkOrdersDb } from "@/src/api/workOrders";
 import { openDb, type AppDatabase } from "@/src/db";
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { getActiveWorkOrderUuid, removeActiveWorkOrderUuid, setActiveWorkOrderUuid } from "../utils/storage";
@@ -37,39 +37,42 @@ export function WorkOrderDbProvider({ children }: { children: ReactNode }) {
 
 	// Track the underlying sqlite connection for cleanup
 	const sqliteRef = useRef<ReturnType<typeof import("expo-sqlite").openDatabaseSync> | null>( null );
+	const activeIdRef = useRef<string | null>( null );
 	
 	const closeExisting = useCallback(async () => {
 		if( sqliteRef.current ) {
 			sqliteRef.current.closeSync();
 			sqliteRef.current = null;
 		}
+		activeIdRef.current = null;
 		
 		setDb( null );
 	}, []);
 
 	const openWorkOrder = useCallback( async( uuid: string ) => {
+		if( sqliteRef.current && activeIdRef.current === uuid ) {
+			setIsReady( true );
+			return;
+		}
+
 		try {
 			setError( null );
 			setIsReady( false );
 
-			// 1. Download if not already on device
-			if( !dbExists( uuid ) ) {
-				await downloadWorkOrdersDb( uuid );
-			}
-
-			// 2. Close any previous connection
 			await closeExisting();
+			await downloadWorkOrdersDb( uuid );
 
-			// 3. Open and wrap with Drizzle
-			const drizzleDb = openDb( `${uuid}.sqlite` );
-			setDb( drizzleDb );
+			const opened = openDb( `${uuid}.sqlite` );
+			sqliteRef.current = opened.sqlite;
+			activeIdRef.current = uuid;
+			setDb( opened.db );
 
-			// 4. Persist active work order
 			await setActiveWorkOrderUuid( uuid );
 			setActiveWorkOrderId( uuid );
 
 			setIsReady( true );
 		} catch( err ) {
+			activeIdRef.current = null;
 			setError( err instanceof Error ? err.message : "Failed to load database", );
 		}
 	}, [ closeExisting ]);
@@ -116,8 +119,7 @@ export function WorkOrderDbProvider({ children }: { children: ReactNode }) {
 		return () => {
 			cancelled = true;
 		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [ activeWorkOrderId, isAuthenticated, isLoading, openWorkOrder ]);
+	}, [ isAuthenticated, isLoading, openWorkOrder ]);
 	
 	return (
 		<WorkOrderDbContext.Provider value={{ isReady, error, db, activeWorkOrderId, openWorkOrder, closeWorkOrder, refresh, }}>

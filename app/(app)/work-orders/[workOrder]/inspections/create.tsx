@@ -48,7 +48,7 @@ function CreateInspection() {
 		const [ inspection ] = result;
 
 		router.push({
-			pathname: `./[inspection]/edit`,
+			pathname: `./edit`,
 			params: {
 				inspection: inspection.insertedId
 			}

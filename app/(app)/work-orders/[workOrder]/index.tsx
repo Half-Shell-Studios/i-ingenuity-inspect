@@ -26,15 +26,19 @@ export default function WorkOrder() {
 	const [ areas, setAreas ] = useState<Location[]>();
 
 	useEffect(() => {
-		if( isReady ) {
-			(async() => {
+		if( !isReady || !db ) return;
+
+		(async() => {
+			try {
 				setLocations( await locationsQuery.getAllLocations( db ) );
 				setCustomers( await locationsQuery.getAllCustomers( db ) );
 				setSites( await locationsQuery.getAllSites( db ) );
 				setPlants( await locationsQuery.getAllPlants( db ) );
 				setAreas( await locationsQuery.getAllAreas( db ) );
-			})();
-		}
+			} catch( queryError ) {
+				console.error( "Failed to load work order locations", queryError );
+			}
+		})();
 	}, [ isReady, db ]);
 
 	useEffect(() => {

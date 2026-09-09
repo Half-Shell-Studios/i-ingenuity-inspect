@@ -45,7 +45,7 @@ function InspectionsIndex() {
 					{inspections.map( inspection => {
 						return (
 							<TouchableOpacity key={ inspection?.id } onPress={() => router.push({
-								pathname: "/inspections/[inspection]",
+								pathname: "./inspections/[inspection]",
 								params: {
 									inspection: inspection?.id
 								}
