@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { AuthProvider, useAuth } from "../src/context/AuthContext";
 import { clearSecureStore, getLastRoute } from "../src/utils/storage";
-import { AUTH_ROUTE, DEFAULT_ROUTE } from "@/src/constants/routes";
+import { AUTH_ROUTE, sanitizeLastRoute } from "@/src/constants/routes";
 
 function AuthGate() {
 	const { isLoading, isAuthenticated } = useAuth();
@@ -30,7 +30,7 @@ function AuthGate() {
 		if( isAuthenticated && inAuthGroup ) {
 			(async () => {
 				const lastRoute = await getLastRoute();
-				router.replace( lastRoute ?? DEFAULT_ROUTE );
+				router.replace( sanitizeLastRoute( lastRoute ) );
 				setHasRedirected( true );
 			})();
 			return;
@@ -39,7 +39,7 @@ function AuthGate() {
 		if( isAuthenticated && !hasRedirected && segments[0] !== '(app)' ) {
 			(async () => {
 				const lastRoute = await getLastRoute();
-				router.replace( lastRoute ?? DEFAULT_ROUTE );
+				router.replace( sanitizeLastRoute( lastRoute ) );
 				setHasRedirected( true );
 			})();
 		}

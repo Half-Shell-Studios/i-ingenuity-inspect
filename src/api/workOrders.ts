@@ -1,21 +1,33 @@
 import type { WorkOrder } from '@/src/types/WorkOrder';
-import { getActiveWorkOrderUuid, setActiveWorkOrderUuid } from '@/src/utils/storage';
-import { Directory, File, Paths } from 'expo-file-system';
+import { getActiveWorkOrderUuid, getToken, setActiveWorkOrderUuid } from '@/src/utils/storage';
+import { Directory, File } from 'expo-file-system';
+import { deleteDatabaseSync } from 'expo-sqlite';
+import { sqliteDirectory } from '@/src/db';
 import client from "./client";
 
-const sqliteDir = new Directory( Paths.document, 'SQLite' );
+const sqliteDir = new Directory( sqliteDirectory );
 
 export const workOrdersApi = {
 	getAll: () => client.get<WorkOrder[]>( '/work-orders' ),
 
 	getById: ( id: string ) => client.get<ArrayBuffer>( `/work-orders/${ id }/download`, { responseType: "arraybuffer" } ),
-
-	// create: ( payload: CreateWorkOrderPayload ) => client.post<WorkOrder>( '/work-orders', payload ),
-
-	// update: ( id: string, payload: UpdateWorkOrderPayload ) => client.patch<WorkOrder>( `/work-orders/${id}`, payload ),
-
-	// delete: ( id: string ) => client.delete( `/work-orders/${ id }` ),
 };
+
+function localDbFile( uuid: string ) {
+	return new File( sqliteDir, `${ uuid }.sqlite` );
+}
+
+async function isValidSqliteFile( file: File ): Promise<boolean> {
+	if( !file.exists || file.size < 100 ) return false;
+
+	try {
+		const bytes = new Uint8Array( await file.arrayBuffer() );
+		const header = String.fromCharCode( ...bytes.slice( 0, 15 ) );
+		return header === 'SQLite format 3';
+	} catch {
+		return false;
+	}
+}
 
 export async function downloadWorkOrdersDb( uuid: string ): Promise<void> {
 	if( uuid === "" ) return;
@@ -24,16 +36,42 @@ export async function downloadWorkOrdersDb( uuid: string ): Promise<void> {
 		sqliteDir.create();
 	}
 
-	const localDbFile = new File( sqliteDir, `${ uuid }.sqlite` );
-	if( localDbFile.exists ) {
+	const file = localDbFile( uuid );
+	if( await isValidSqliteFile( file ) ) {
 		await setActiveWorkOrderUuid( uuid );
 		return;
 	}
 
-	const { data: dbFile } = await workOrdersApi.getById( uuid );
+	if( file.exists ) {
+		try {
+			deleteDatabaseSync( `${ uuid }.sqlite`, sqliteDirectory );
+		} catch {
+			file.delete();
+		}
+	}
 
-	localDbFile.write( new Uint8Array( dbFile ) );
-	
+	const token = await getToken();
+	const baseUrl = process.env.EXPO_PUBLIC_API_URL;
+	if( !baseUrl ) {
+		throw new Error( 'EXPO_PUBLIC_API_URL is not set' );
+	}
+
+	await File.downloadFileAsync(
+		`${ baseUrl }/work-orders/${ uuid }/download`,
+		file,
+		{
+			idempotent: true,
+			headers: {
+				Accept: 'application/octet-stream',
+				...( token ? { Authorization: `Bearer ${ token }` } : {} ),
+			},
+		},
+	);
+
+	if( !( await isValidSqliteFile( file ) ) ) {
+		throw new Error( 'Downloaded work order database is not a valid SQLite file.' );
+	}
+
 	await setActiveWorkOrderUuid( uuid );
 }
 
@@ -44,29 +82,25 @@ export async function getActiveWorkOrderDbName(): Promise<string | null> {
 export function dbExists( uuid: string ): boolean {
 	if( uuid === '' ) return false;
 
-	const dbFile = new File( sqliteDir, `${ uuid }.sqlite` );
-	
-	return dbFile.exists;
+	return localDbFile( uuid ).exists;
 }
 
 export async function deleteLocalDb( uuid: string ): Promise<void> {
 	debugSqliteDir();
-	if( !dbExists( uuid ) ) return;
+	if( uuid === '' ) return;
 
-	for( const extension of [ 'db', 'sqlite' ] ) {
-		for( const suffix of [ '', '-wal', '-shm', '-journal' ] ) {
-			const file = new File( sqliteDir, `${ uuid }.${ extension }${ suffix }` );
-
-			if( file.exists ) {
-				file.delete();
-				console.log( `Deleted ${ uuid }.${ extension }${ suffix }` );
-			} else {
-				console.log( `File ${ uuid }.${ extension }${ suffix } does not exist.` );
+	try {
+		deleteDatabaseSync( `${ uuid }.sqlite`, sqliteDirectory );
+	} catch {
+		for( const extension of [ 'db', 'sqlite' ] ) {
+			for( const suffix of [ '', '-wal', '-shm', '-journal' ] ) {
+				const file = new File( sqliteDir, `${ uuid }.${ extension }${ suffix }` );
+				if( file.exists ) {
+					file.delete();
+				}
 			}
 		}
 	}
-
-	console.log( "Exists after delete?", dbExists( uuid ) );
 
 	debugSqliteDir();
 }

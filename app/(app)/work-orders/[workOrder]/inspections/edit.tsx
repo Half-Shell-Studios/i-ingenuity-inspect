@@ -44,35 +44,44 @@ function EditInspection() {
 	const [ faultCodes, setFaultCodes ] = useState<SelectOption[]>();
 
 	useEffect(() => {
-		if( dbIsReady ) {
-			(async () => {
-				const allFaultCodes = await getAllFaultCodes( db );
+		if( !dbIsReady ) return;
 
-				const faultCodesAsOptions = allFaultCodes.map( faultCode => ({
+		(async () => {
+			try {
+				const allFaultCodes = await getAllFaultCodes( db );
+				setFaultCodes( allFaultCodes.map( faultCode => ({
 					label: faultCode.name,
 					value: faultCode.id
-				}))
-
-				setFaultCodes( faultCodesAsOptions );
-			})();
-		}
-	}, [ dbIsReady ])
+				})));
+			} catch ( error ) {
+				console.error( "Failed to load fault codes", error );
+			}
+		})();
+	}, [ dbIsReady, db ]);
 
 	useEffect(() => {
-		if( dbIsReady ) {
-			(async () => (
-				setCurrentInspection( await getInspectionById( db, inspection ) )
-			))();
-		}
-	}, [ dbIsReady, inspection ])
+		if( !dbIsReady || !inspection ) return;
+
+		(async () => {
+			try {
+				setCurrentInspection( await getInspectionById( db, Array.isArray( inspection ) ? inspection[0] : inspection ) );
+			} catch ( error ) {
+				console.error( "Failed to load inspection", error );
+			}
+		})();
+	}, [ dbIsReady, inspection, db ]);
 	
 	useEffect(() => {
-		if( dbIsReady ) {
-			(async () => (
-				setInspectedBy( await getUser( db, currentInspection?.inspectedBy ) )
-			))();
-		}
-	}, [ dbIsReady, currentInspection ])
+		if( !dbIsReady || !currentInspection?.inspectedBy ) return;
+
+		(async () => {
+			try {
+				setInspectedBy( await getUser( db, currentInspection.inspectedBy ) );
+			} catch ( error ) {
+				console.error( "Failed to load inspector", error );
+			}
+		})();
+	}, [ dbIsReady, currentInspection, db ]);
 	
 	useEffect(() => {
 		if( dbIsReady && currentInspection ) {
@@ -219,7 +228,7 @@ function EditInspection() {
 			<CardsContainer>
 				{ inspectionTemplate?.map(( templateSection: InspectionTemplateSection, sectionIndex: number ) => {
 					return (
-						<Card key={ templateSection?.name }>
+						<Card key={ `section-${ sectionIndex }` }>
 							<View style={{ marginBottom: 10 }}>
 								<GridRow style={{ alignItems: 'center', justifyContent: 'space-between' }}>
 									<GridColumn>
@@ -243,7 +252,7 @@ function EditInspection() {
 							) : (
 
 								templateSection.questions.map(( question: InspectionTemplateQuestion, questionIndex: number ) => (
-									<View key={ question.id } style={{ marginBottom: 20 }}>
+									<View key={ `question-${ sectionIndex }-${ questionIndex }` } style={{ marginBottom: 20 }}>
 										<GridRow style={{ marginInline: -10, marginBottom: 10, flexWrap: 'nowrap' }}>
 											<GridColumn style={{ flexGrow: 0, minWidth: 0, marginInline: 10 }}>
 												<Text style={{ fontWeight: 600 }}>{ question.id.trim() }</Text>
